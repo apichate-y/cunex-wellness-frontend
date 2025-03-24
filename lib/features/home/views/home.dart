@@ -17,7 +17,7 @@ class HomeScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     final bgImage = ref.watch(backgroundImageProvider);
-    final gender = ref.watch(botGenderProvider);
+    final genderAsync = ref.watch(botGenderProvider);
 
     return Scaffold(
       body: Stack(
@@ -26,54 +26,39 @@ class HomeScreen extends ConsumerWidget {
           // 🖼️ Background image
           Image.asset(bgImage, fit: BoxFit.cover),
 
-          // 🔊 Top bar (icon, progress, music)
-          Positioned(
-            top: 48,
-            left: 24,
-            right: 24,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Image.asset('assets/images/icon/hanger.png', width: 30),
-                Image.asset('assets/images/element/progress.png', width: 120),
-                Image.asset('assets/images/icon/music.png', width: 30),
-              ],
-            ),
-          ),
-
+          // 💬 Speech bubble + message
           Positioned(
             top: screenHeight * 0.31,
-            left: 0,
-            right: 80,
+            left: 10,
+            right: 40,
             child: SizedBox(
-              height: 100, // ปรับตามขนาดกล่อง
+              height: 125,
               child: Stack(
                 children: [
-                  // 1. กล่อง bubble
-                  Image.asset(
-                    'lib/assets/images/element/b.png',
-                    fit: BoxFit.contain,
-                    width: double.infinity,
+                  Positioned(
+                    left: 0,
+                    child: Image.asset(
+                      'lib/assets/images/element/b.png',
+                      fit: BoxFit.contain,
+                      height: 120,
+                    ),
                   ),
-
-                  // 2. ข้อความหลัก (ตรงกลาง)
                   Positioned(
                     top: 20,
-                    left: 20,
-                    right: 20,
+                    left: -50,
+                    right: 0,
                     child: Image.asset(
                       'lib/assets/images/word/3.png',
                       fit: BoxFit.contain,
+                      height: 50,
                     ),
                   ),
-
-                  // 3. คำว่า "ต่อไป" (มุมขวาล่าง)
                   Positioned(
                     bottom: 8,
-                    right: 16,
+                    right: 40,
                     child: Image.asset(
                       'lib/assets/images/word/4.png',
-                      scale: 10,
+                      scale: 9,
                     ),
                   ),
                 ],
@@ -86,33 +71,18 @@ class HomeScreen extends ConsumerWidget {
             bottom: screenHeight * 0.18,
             left: 0,
             right: 0,
-            child: Image.asset(
-              gender == BotGender.male
-                  ? 'lib/assets/images/mascot/nexky character-10.png'
-                  : gender == BotGender.female
-                  ? 'lib/assets/images/mascot/nexky character-11.png'
-                  : 'lib/assets/images/mascot/nexky character-09.png', // 👈 สำหรับ other
-              key: ValueKey(gender),
-              height: 300.0,
-            ),
-          ),
-
-          // 🕒 Bottom nav
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              color: Colors.white.withOpacity(0.2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset('assets/images/icon/calendar.png', width: 32),
-                  Image.asset('assets/images/icon/home_active.png', width: 32),
-                  Image.asset('assets/images/icon/moon.png', width: 32),
-                ],
-              ),
+            child: genderAsync.when(
+              data:
+                  (gender) => Image.asset(
+                    gender == BotGender.male
+                        ? 'lib/assets/images/mascot/nexky character-10.png'
+                        : gender == BotGender.female
+                        ? 'lib/assets/images/mascot/nexky character-11.png'
+                        : 'lib/assets/images/mascot/nexky character-09.png',
+                    height: 300,
+                  ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => const SizedBox(),
             ),
           ),
         ],
