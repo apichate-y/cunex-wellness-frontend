@@ -28,9 +28,11 @@ packages:
   assets_audio_player:
     dependency: "direct main"
     description:
-      path: "packages/Flutter-AssetsAudioPlayer"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "28a7f52db65fd8b8ac0bdc39013d3de978c8a375"
+      url: "https://github.com/florent37/Flutter-AssetsAudioPlayer"
+    source: git
     version: "3.1.1"
   async:
     dependency: transitive
