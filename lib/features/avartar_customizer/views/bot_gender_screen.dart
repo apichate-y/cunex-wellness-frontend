@@ -39,10 +39,10 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 🖼️ Background image
+          // Background image
           Image.asset(bgImage, fit: BoxFit.cover),
 
-          // 🗨️ Speech bubble image
+          // Speech bubble image
           Positioned(
             top: screenHeight * 0.31,
             left: 40,
@@ -53,7 +53,7 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
             ),
           ),
 
-          // 📝 Text image inside bubble
+          // Text image inside bubble
           Positioned(
             top: screenHeight * 0.34,
             left: 60,
@@ -64,7 +64,7 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
             ),
           ),
 
-          // 🐣 Mascot image with glow effect when tapped
+          // Mascot image with glow effect when tapped
           Positioned(
             bottom: screenHeight * 0.22,
             left: 0,
@@ -105,7 +105,7 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
             ),
           ),
 
-          // 👚 Gender Options
+          // Gender Options
           Positioned(
             bottom: 80,
             left: 0,
@@ -113,7 +113,7 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // 🚺 Female
+                // Female
                 GestureDetector(
                   onTap: () async {
                     await ref
@@ -142,7 +142,7 @@ class _BotGenderScreenState extends ConsumerState<BotGenderScreen> {
                   ),
                 ),
 
-                // 🚹 Male
+                // Male
                 GestureDetector(
                   onTap: () async {
                     await ref
