@@ -11,7 +11,7 @@ class CategoryFilterButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(selectedCategoryProvider);
-    final isSelected = category == selected || (category == null && selected == null);
+    category == selected || (category == null && selected == null);
 
     IconData getIcon(String? cat) {
       switch (cat) {

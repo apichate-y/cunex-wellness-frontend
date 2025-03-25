@@ -66,7 +66,6 @@ class CalendarScreen extends ConsumerWidget {
     final selectedDay = ref.watch(selectedDayProvider);
     final focusedDay = ref.watch(focusedDayProvider);
     final showNote = ref.watch(showNoteProvider);
-    final noteText = ref.watch(noteTextProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
