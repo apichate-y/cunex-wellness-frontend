@@ -14,4 +14,4 @@ flutter config --enable-web
 flutter pub get
 
 # Build web
-flutter build web
+flutter build web --base-href="/cunex-wellness-frontend/"
