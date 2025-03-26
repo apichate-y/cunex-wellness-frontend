@@ -1,5 +1,9 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:cunex_wellness/core/services/chatbot_service.dart';
 import 'package:cunex_wellness/core/services/preferences_manager.dart';
+import 'package:cunex_wellness/features/music/providers/audio_handler.dart';
+import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:cunex_wellness/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +18,25 @@ void main() async {
   Intl.defaultLocale = "th";
   await initializeDateFormatting('th_TH', null);
 
+    final session = await AudioSession.instance;
+  await session.configure(AudioSessionConfiguration.music());
+
+  final handler = await AudioService.init(
+    builder: () => MyAudioHandler(),
+    config: const AudioServiceConfig(androidNotificationChannelId: 'channel.audio'),
+  );
+
   final botGender = await PreferencesManager.loadBotGender();
   ChatBotService.setGender(botGender);
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+      audioHandlerProvider.overrideWithValue(handler),
+    ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

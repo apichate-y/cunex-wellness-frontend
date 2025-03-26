@@ -1,9 +1,8 @@
 import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
-import 'package:cunex_wellness/features/music/views/audio_player_screen.dart';
+import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:cunex_wellness/features/music/views/category_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:go_router/go_router.dart';
 
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
@@ -97,50 +96,17 @@ final audioFilesProvider = Provider<Map<String, List<Map<String, String>>>>(
   },
 );
 
-class AudioPlaylistScreen extends ConsumerStatefulWidget {
+class AudioPlaylistScreen extends ConsumerWidget {
   const AudioPlaylistScreen({super.key});
 
   @override
-  ConsumerState<AudioPlaylistScreen> createState() =>
-      _AudioPlaylistScreenState();
-}
-
-class _AudioPlaylistScreenState extends ConsumerState<AudioPlaylistScreen> {
-  final player = AssetsAudioPlayer.newPlayer();
-
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
-  }
-
-  void playAudio(Map<String, String> track, String category) async {
-    final player = ref.read(audioPlayerProvider); // ✅ ดึง instance จาก Riverpod
-
-    if (player.isPlaying.value) {
-      await player.stop();
-    }
-
-    await player.open(Audio(track['path']!), showNotification: true);
-
-    context.push(
-      '/player',
-      extra: {
-        'title': track['title'],
-        'category': category,
-        'path': track['path'],
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final audioFiles = ref.watch(audioFilesProvider);
-
     final backgroundImage = 'lib/assets/images/bg/bg_night.png';
 
+    // 🔍 Search filtering
     final List<Map<String, String>> searchResults = [];
     for (var entry in audioFiles.entries) {
       final category = entry.key;
@@ -170,14 +136,15 @@ class _AudioPlaylistScreenState extends ConsumerState<AudioPlaylistScreen> {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomAppbar(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: CustomAppbar(level: 1, progress: 0.5,),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
@@ -225,7 +192,6 @@ class _AudioPlaylistScreenState extends ConsumerState<AudioPlaylistScreen> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 16),
                     const Text(
                       'Recommended Stations',
@@ -247,6 +213,7 @@ class _AudioPlaylistScreenState extends ConsumerState<AudioPlaylistScreen> {
                             audioFiles.entries
                                 .firstWhere((e) => e.value.contains(track))
                                 .key;
+
                         return ListTile(
                           leading: const Icon(
                             Icons.music_note,
@@ -267,7 +234,26 @@ class _AudioPlaylistScreenState extends ConsumerState<AudioPlaylistScreen> {
                             Icons.more_vert,
                             color: Colors.white,
                           ),
-                          onTap: () => playAudio(track, category),
+                          onTap: () async {
+                            final audioController = ref.read(
+                              audioPlayerProvider.notifier,
+                            );
+
+                            context.push(
+                              '/player',
+                              extra: {
+                                'title': track['title'],
+                                'category': category,
+                                'path': track['path'],
+                              },
+                            );
+
+                            await audioController.loadAndPlay(
+                              track['path']!,
+                              track['title']!,
+                              category,
+                            );
+                          },
                         );
                       },
                     ),

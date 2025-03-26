@@ -28,49 +28,68 @@ class CustomNavigationBar extends StatelessWidget {
             right: 0,
             child: Column(
               children: [
-                Container(
-                  width: screenWidth,
-                  height: 10,
-                  color: AppTheme.rosePink,
-                ),
-                SizeBox.height5,
-                Container(
-                  height: 75,
-                  color: AppTheme.rosePink,
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      NavItem(
-                        index: 0,
-                        selectedIndex: selectedIndex,
-                        assetPath:
-                            'lib/assets/images/icons/5 main buttons/calendar2.png',
-                        activeAssetPath:
-                            'lib/assets/images/icons/5 main buttons/calendar.png',
-                        onTap: () => onTap(0),
-                      ),
-                      NavItem(
-                        index: 1,
-                        selectedIndex: selectedIndex,
-                        assetPath:
-                            'lib/assets/images/icons/5 main buttons/home2.png',
-                        activeAssetPath:
-                            'lib/assets/images/icons/5 main buttons/home.png',
-                        onTap: () => onTap(1),
-                      ),
-                      NavItem(
-                        index: 2,
-                        selectedIndex: selectedIndex,
-                        assetPath:
-                            'lib/assets/images/icons/5 main buttons/profile2.png',
-                        activeAssetPath:
-                            'lib/assets/images/icons/5 main buttons/profile.png',
-                        onTap: () => onTap(2),
-                      ),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 55,
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    decoration: BoxDecoration(
+                      color: AppTheme.rosePink,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        NavItem(
+                          index: 0,
+                          selectedIndex: selectedIndex,
+                          assetPath:
+                              'lib/assets/images/icons/5 main buttons/calendar2.png',
+                          activeAssetPath:
+                              'lib/assets/images/icons/5 main buttons/calendar.png',
+                          onTap: () => onTap(0),
+                        ),
+                        NavItem(
+                          index: 1,
+                          selectedIndex: selectedIndex,
+                          assetPath:
+                              'lib/assets/images/icons/5 main buttons/chat2.png',
+                          activeAssetPath:
+                              'lib/assets/images/icons/5 main buttons/chat.png',
+                          onTap: () => onTap(1),
+                        ),
+                        NavItem(
+                          index: 2,
+                          selectedIndex: selectedIndex,
+                          assetPath:
+                              'lib/assets/images/icons/5 main buttons/home2.png',
+                          activeAssetPath:
+                              'lib/assets/images/icons/5 main buttons/home.png',
+                          onTap: () => onTap(2),
+                        ),
+                        NavItem(
+                          index: 3,
+                          selectedIndex: selectedIndex,
+                          assetPath:
+                              'lib/assets/images/icons/5 main buttons/music2.png',
+                          activeAssetPath:
+                              'lib/assets/images/icons/5 main buttons/music.png',
+                          onTap: () => onTap(3),
+                        ),
+                        NavItem(
+                          index: 4,
+                          selectedIndex: selectedIndex,
+                          assetPath:
+                              'lib/assets/images/icons/5 main buttons/profile2.png',
+                          activeAssetPath:
+                              'lib/assets/images/icons/5 main buttons/profile.png',
+                          onTap: () => onTap(4),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                SizeBox.height5,
               ],
             ),
           ),

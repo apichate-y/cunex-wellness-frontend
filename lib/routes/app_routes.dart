@@ -1,10 +1,15 @@
 import 'package:cunex_wellness/features/avartar_customizer/views/bot_gender_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/calendar_screen.dart';
+import 'package:cunex_wellness/features/calendar/views/intro_calendar_screen.dart';
 import 'package:cunex_wellness/features/chat_bot/views/chat_screen.dart';
+import 'package:cunex_wellness/features/chat_bot/views/intro_chat_screen.dart';
 import 'package:cunex_wellness/features/home/views/home_screen.dart';
 import 'package:cunex_wellness/features/landing/views/landing_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_player_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_playlist_screen.dart';
+import 'package:cunex_wellness/features/music/views/intro_audio_screen.dart';
+import 'package:cunex_wellness/features/profile/views/intro_personal_info_screen.dart';
+import 'package:cunex_wellness/features/profile/views/personal_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cunex_wellness/features/splash_screen/views/splash_screen.dart';
@@ -31,15 +36,27 @@ final GoRouter router = GoRouter(
       },
       routes: [
         GoRoute(
+          path: '/intro-calendar',
+          builder: (context, state) => const IntroCalendarScreen(),
+        ),
+        GoRoute(
           path: '/calendar',
           builder: (context, state) => const CalendarScreen(),
         ),
+        GoRoute(
+          path: '/intro-chat',
+          builder: (context, state) => const IntroChatScreen(),
+        ),
+        GoRoute(
+          path: '/chat',
+          name: 'chat',
+          builder:
+              (BuildContext context, GoRouterState state) => const ChatScreen(),
+        ),
         GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
         GoRoute(
-          path: '/profile',
-          builder:
-              (context, state) =>
-                  Scaffold(body: const Center(child: Text('Profile'),),),
+          path: '/intro-audio',
+          builder: (context, state) => const IntroAudioScreen(),
         ),
         GoRoute(
           path: '/playlist',
@@ -56,13 +73,15 @@ final GoRouter router = GoRouter(
             );
           },
         ),
+        GoRoute(
+          path: '/intro-profile',
+          builder: (context, state) => IntroPersonalInfoScreen(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => PersonalInfoScreen(),
+        ),
       ],
-    ),
-    GoRoute(
-      path: '/chat',
-      name: 'chat',
-      builder:
-          (BuildContext context, GoRouterState state) => const ChatScreen(),
     ),
   ],
 );

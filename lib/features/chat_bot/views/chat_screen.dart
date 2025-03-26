@@ -1,9 +1,9 @@
-import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/core/services/chatbot_service.dart';
-import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
-import 'package:cunex_wellness/features/chat_bot/models/bot_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:cunex_wellness/config/color.dart';
+import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
+import 'package:cunex_wellness/features/chat_bot/models/bot_message.dart';
 
 final chatMessagesProvider = StateProvider<List<ChatMessage>>(
   (ref) => [
@@ -16,6 +16,10 @@ final chatMessagesProvider = StateProvider<List<ChatMessage>>(
 );
 
 final chatInputProvider = StateProvider<String>((ref) => '');
+
+final geminiProvider = Provider<Gemini>((ref) {
+  return Gemini.init(apiKey: 'AIzaSyCDvOinZEXpKnnRLbMT6O6YS-6DqAv0o64');
+});
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -47,51 +51,64 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 
+  Future<void> sendMessage(String text) async {
+  final newMessages = [...ref.read(chatMessagesProvider)];
+  newMessages.add(ChatMessage(text: text, isBot: false));
+  ref.read(chatMessagesProvider.notifier).state = newMessages;
+  scrollToBottom();
+
+  final gemini = ref.read(geminiProvider);
+
+  try {
+    final response = await gemini.prompt(parts: [Part.text(text)]);
+
+    ref.read(chatMessagesProvider.notifier).state = [
+      ...ref.read(chatMessagesProvider),
+      ChatMessage(
+        text: response?.output ??
+            'น้อง Nekky อยู่ระหว่างพัก ไม่สามารถใช้งานได้ในขณะนี้',
+        isBot: true,
+      ),
+    ];
+  } catch (e) {
+    ref.read(chatMessagesProvider.notifier).state = [
+      ...ref.read(chatMessagesProvider),
+      ChatMessage(
+        text: 'น้อง Nekky อยู่ระหว่างพัก ไม่สามารถใช้งานได้ในขณะนี้',
+        isBot: true,
+      ),
+    ];
+  }
+
+  scrollToBottom();
+}
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       backgroundColor: AppTheme.white,
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: true,
-      //   backgroundColor: AppTheme.rosePink,
-      //   elevation: 0,
-      //   title: const Text(
-      //     'NEKKY CHATBOT',
-      //     style: TextStyle(color: AppTheme.black, fontWeight: FontWeight.bold),
-      //   ),
-      //   centerTitle: true,
-      // ),
       body: Column(
         children: [
-          const CustomAppbar(),
           Container(
-            width: MediaQuery.of(context).size.width,
-            height: 50,
+            height: 90,
             color: AppTheme.greyUltraLight,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: 20,
-                    color: Colors.black, // หรือใช้ AppTheme.black ถ้ามี
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: Align(
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'NEKKY CHATBOT',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black, // หรือ AppTheme.black
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'CHAT WITH NEKKY',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -99,7 +116,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ],
             ),
           ),
-
           Expanded(
             child: ListView.builder(
               controller: scrollController,
@@ -121,8 +137,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: CircleAvatar(
                             radius: 20,
-                            backgroundColor: AppTheme.white,
-                            backgroundImage: AssetImage(
+                            backgroundImage: const AssetImage(
                               'lib/assets/images/element/j.png',
                             ),
                           ),
@@ -156,7 +171,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(
+              12,
+              8,
+              12,
+              90,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -175,35 +195,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         vertical: 10,
                       ),
                     ),
-                    onChanged:
-                        (value) =>
-                            ref.read(chatInputProvider.notifier).state = value,
+                    onChanged: (value) => ref.read(chatInputProvider.notifier).state = value,
                     onTap: scrollToBottom,
                   ),
                 ),
                 const SizedBox(width: 8),
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: const Color(0xFFD16A86),
+                  backgroundColor: AppTheme.rosePink,
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
                     onPressed: () {
                       final text = inputController.text.trim();
                       if (text.isEmpty) return;
-
-                      final newMessages = [...ref.read(chatMessagesProvider)];
-                      newMessages.add(ChatMessage(text: text, isBot: false));
-                      newMessages.add(
-                        ChatMessage(
-                          text: ChatBotService.getMessageByKeyword(text),
-                          isBot: true,
-                        ),
-                      );
-
-                      ref.read(chatMessagesProvider.notifier).state =
-                          newMessages;
                       inputController.clear();
-                      scrollToBottom();
+                      sendMessage(text);
                     },
                   ),
                 ),

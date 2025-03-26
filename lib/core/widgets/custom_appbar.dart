@@ -1,20 +1,80 @@
-import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/config/sizebox.dart' show SizeBox;
 import 'package:flutter/material.dart';
 
 class CustomAppbar extends StatelessWidget {
-  const CustomAppbar({super.key});
+  final double progress;
+  final int level;
+
+  const CustomAppbar({super.key, required this.progress, required this.level});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    
-    return Column(
-      children: [
-        Container(width: screenWidth, height: 90, color: AppTheme.rosePink),
-        SizeBox.height5,
-        Container(width: screenWidth, height: 10, color: AppTheme.rosePink),
-      ],
+    return SafeArea(
+      child: Center(
+        child: SizedBox(
+          width: 250,
+          height: 40,
+          child: Stack(
+            children: [
+              // แถบเทา (background)
+              Positioned.fill(
+                left: 35,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                  ),
+                ),
+              ),
+
+              // แถบชมพู (progress)
+              Positioned(
+                left: 35,
+                top: 5,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final barWidth = 250 * progress.clamp(0.0, 1.0) - 35;
+                    return Container(
+                      width: barWidth,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.pinkAccent.shade100,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // เมฆ + ตัวเลข
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  width: 60,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade400, width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$level',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.pink,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

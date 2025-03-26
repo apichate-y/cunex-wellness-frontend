@@ -1,10 +1,9 @@
+import 'package:cunex_wellness/core/enums/bot_gender.dart';
 import 'package:cunex_wellness/core/services/background_service.dart';
 import 'package:cunex_wellness/core/services/preferences_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/enums/bot_gender.dart';
 
 final botGenderProvider = FutureProvider<BotGender>((ref) async {
   return await PreferencesManager.loadBotGender();
@@ -34,7 +33,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final bgImage = ref.watch(backgroundImageProvider);
-    final genderAsync = ref.watch(botGenderProvider);
 
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -78,34 +76,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 duration: const Duration(milliseconds: 200),
                 child: Container(
                   key: ValueKey(isPressed),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(200),
-                    boxShadow:
-                        isPressed
-                            ? [
-                              BoxShadow(
-                                color: Colors.yellowAccent.withValues(
-                                  alpha: 0.4,
-                                ), //
-                                blurRadius: 20,
-                                spreadRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                            : [],
-                  ),
-                  child: genderAsync.when(
-                    data:
-                        (gender) => Image.asset(
-                          gender == BotGender.male
-                              ? 'lib/assets/images/mascot/nexky character-10.png'
-                              : gender == BotGender.female
-                              ? 'lib/assets/images/mascot/nexky character-11.png'
-                              : 'lib/assets/images/mascot/nexky character-09.png',
-                          height: 300,
-                        ),
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => const SizedBox(),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(200),
+                  //   boxShadow:
+                  //       isPressed
+                  //           ? [
+                  //             BoxShadow(
+                  //               color: Colors.yellowAccent.withValues(
+                  //                 alpha: 0.5,
+                  //               ), //
+                  //               blurRadius: 20,
+                  //               spreadRadius: 0.5,
+                  //             ),
+                  //           ]
+                  //           : [],
+                  // ),
+                  child: Image.asset(
+                    'lib/assets/images/mascot/nexky character-09.png',
+                    height: 300,
                   ),
                 ),
               ),
