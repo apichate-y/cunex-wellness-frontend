@@ -1,10 +1,12 @@
+// ✅ audio_player_screen.dart
+import 'package:audio_service/audio_service.dart';
 import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
+import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:go_router/go_router.dart';
 
-class AudioPlayerScreen extends ConsumerWidget {
+class AudioPlayerScreen extends ConsumerStatefulWidget {
   final String title;
   final String category;
   final String path;
@@ -17,8 +19,35 @@ class AudioPlayerScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final player = ref.watch(audioPlayerProvider);
+  ConsumerState<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
+}
+
+class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
+  late final AudioHandler handler;
+  bool _hasLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    handler = ref.read(audioHandlerProvider);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasLoaded) {
+      _hasLoaded = true;
+      ref.read(audioPlayerProvider.notifier).loadAndPlay(
+            widget.path,
+            widget.title,
+            widget.category,
+          );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final audioState = ref.watch(audioPlayerProvider);
 
     return Scaffold(
       body: Container(
@@ -29,9 +58,11 @@ class AudioPlayerScreen extends ConsumerWidget {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomAppbar(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: CustomAppbar(level: 1, progress: 0.5,),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -43,32 +74,28 @@ class AudioPlayerScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: Colors.white,
-                              size: 32,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          onPressed: () => context.pop(),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: Center(
+                            child: Text(
+                              widget.category,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            onPressed: () => context.pop(),
                           ),
                         ),
-                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                           child: Center(
-                              child: Text(
-                                category,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            
-                                                   ),
-                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -85,7 +112,7 @@ class AudioPlayerScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      title,
+                      widget.title,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -94,42 +121,27 @@ class AudioPlayerScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     StreamBuilder<Duration>(
-                      stream: player.currentPosition,
+                      stream: AudioService.position,
                       builder: (context, snapshot) {
                         final position = snapshot.data ?? Duration.zero;
-                        final total =
-                            player.current.hasValue
-                                ? player.current.value!.audio.duration
-                                : Duration.zero;
+                        final total = audioState.totalDuration;
 
                         return Column(
                           children: [
                             Slider(
                               value: position.inSeconds.toDouble(),
-                              max: total.inSeconds.toDouble(),
-                              onChanged:
-                                  (value) => player.seek(
-                                    Duration(seconds: value.toInt()),
-                                  ),
+                              max: total.inSeconds.toDouble().clamp(1, double.infinity),
+                              onChanged: (value) => handler.seek(Duration(seconds: value.toInt())),
                               activeColor: Colors.pink,
                               inactiveColor: Colors.white,
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    _formatDuration(position),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  Text(
-                                    _formatDuration(total),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
+                                  Text(_formatDuration(position), style: const TextStyle(color: Colors.white)),
+                                  Text(_formatDuration(total), style: const TextStyle(color: Colors.white)),
                                 ],
                               ),
                             ),
@@ -142,38 +154,20 @@ class AudioPlayerScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         const Icon(Icons.shuffle, color: Colors.white),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.skip_previous,
-                            color: Colors.white,
+                        const Icon(Icons.skip_previous, color: Colors.white),
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 30,
+                          child: IconButton(
+                            icon: Icon(
+                              audioState.isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: audioState.isPlaying ? Colors.pink : Colors.grey,
+                              size: 30,
+                            ),
+                            onPressed: () => ref.read(audioPlayerProvider.notifier).togglePlayPause(),
                           ),
-                          onPressed: () => player.previous(),
                         ),
-                        StreamBuilder<bool>(
-                          stream: player.isPlaying,
-                          builder: (context, snapshot) {
-                            final isPlaying = snapshot.data ?? false;
-                            return CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 30,
-                              child: IconButton(
-                                icon: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: isPlaying ? Colors.pink : Colors.grey,
-                                  size: 30,
-                                ),
-                                onPressed: () => player.playOrPause(),
-                              ),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.skip_next,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => player.next(),
-                        ),
+                        const Icon(Icons.skip_next, color: Colors.white),
                         const Icon(Icons.repeat, color: Colors.white),
                       ],
                     ),
@@ -193,8 +187,3 @@ class AudioPlayerScreen extends ConsumerWidget {
     return '$minutes:$seconds';
   }
 }
-
-final audioPlayerProvider = Provider<AssetsAudioPlayer>((ref) {
-  final player = AssetsAudioPlayer.withId('main');
-  return player;
-});
