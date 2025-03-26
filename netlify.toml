@@ -1,7 +1,12 @@
 [build]
-  command = "bash ./build.sh"
+  command = "flutter build web"
   publish = "build/web"
 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  
 [build.environment]
   FLUTTER_CHANNEL = "stable"
   FLUTTER_VERSION = "3.29.0"
