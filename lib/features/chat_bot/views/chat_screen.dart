@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
 import 'package:cunex_wellness/features/chat_bot/models/bot_message.dart';
 
 final chatMessagesProvider = StateProvider<List<ChatMessage>>(

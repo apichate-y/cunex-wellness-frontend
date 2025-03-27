@@ -1,4 +1,5 @@
 import 'package:cunex_wellness/core/enums/bot_gender.dart';
+import 'package:cunex_wellness/core/providers/assets_precache_provider.dart';
 import 'package:cunex_wellness/core/services/background_service.dart';
 import 'package:cunex_wellness/core/services/preferences_manager.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +18,20 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  bool isPressed = false;
+
+
+@override
+  void initState() {
+    super.initState();
+    
+    Future.microtask(() => ref.read(assetsPrecacheProvider));
+  }
 
   void onMascotTap() async {
-    setState(() {
-      isPressed = true;
-    });
-
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (!mounted) return;
-    context.go('/botgender'); // ไปหน้าถัดไป
+    context.go('/botgender');
   }
 
   @override
@@ -40,10 +44,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 🖼️ Background image
           Image.asset(bgImage, fit: BoxFit.cover),
 
-          // 🗨️ Speech bubble image
           Positioned(
             top: screenHeight * 0.31,
             left: 40,
@@ -54,7 +56,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
           ),
 
-          // 📝 Text image inside bubble
           Positioned(
             top: screenHeight * 0.34,
             left: 60,
@@ -65,7 +66,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
           ),
 
-          // 🐣 Mascot image with glow effect when tapped
           Positioned(
             bottom: screenHeight * 0.22,
             left: 0,
@@ -74,27 +74,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               onTap: onMascotTap,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
-                child: Container(
-                  key: ValueKey(isPressed),
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(200),
-                  //   boxShadow:
-                  //       isPressed
-                  //           ? [
-                  //             BoxShadow(
-                  //               color: Colors.yellowAccent.withValues(
-                  //                 alpha: 0.5,
-                  //               ), //
-                  //               blurRadius: 20,
-                  //               spreadRadius: 0.5,
-                  //             ),
-                  //           ]
-                  //           : [],
-                  // ),
-                  child: Image.asset(
-                    'lib/assets/images/mascot/nexky character-09.png',
-                    height: 300,
-                  ),
+                child: Image.asset(
+                  'lib/assets/images/mascot/nexky character-09.png',
+                  height: 300,
                 ),
               ),
             ),
