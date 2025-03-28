@@ -1,5 +1,5 @@
 [build]
-  command = "flutter clean && flutter pub get && flutter build web --web-renderer html"
+  command = "flutter clean && flutter pub get && flutter build web"
   publish = "build/web"
 
 [[redirects]]
