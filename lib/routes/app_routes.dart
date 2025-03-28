@@ -2,6 +2,7 @@ import 'package:cunex_wellness/core/providers/navigator_key_provider.dart';
 import 'package:cunex_wellness/features/avartar_customizer/views/bot_gender_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/calendar_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/intro_calendar_screen.dart';
+import 'package:cunex_wellness/features/calendar/views/qr_scan_screen.dart';
 import 'package:cunex_wellness/features/chat_bot/views/chat_screen.dart';
 import 'package:cunex_wellness/features/chat_bot/views/intro_chat_screen.dart';
 import 'package:cunex_wellness/features/home/views/home_screen.dart';
@@ -42,6 +43,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/calendar',
             builder: (context, state) => const CalendarScreen(),
+          ),
+          GoRoute(
+            path: '/qr-scan',
+            builder: (context, state) => const QrScanScreen(),
           ),
           GoRoute(
             path: '/intro-chat',

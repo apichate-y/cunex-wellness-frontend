@@ -25,11 +25,11 @@ class LandingScreen extends ConsumerWidget {
               selectedIndex: selectedIndex,
               onTap: (index) {
                 ref.read(selectedIndexProvider.notifier).state = index;
-                if (index == 0) context.go('/intro-calendar');
-                if (index == 1) context.go('/intro-chat');
+                if (index == 0) context.go('/calendar');
+                if (index == 1) context.go('/chat');
                 if (index == 2) context.go('/home');
-                if (index == 3) context.go('/intro-audio');
-                if (index == 4) context.go('/intro-profile');
+                if (index == 3) context.go('/playlist');
+                if (index == 4) context.go('/profile');
               },
             ),
           ),

@@ -84,6 +84,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final messages = ref.watch(chatMessagesProvider);
 
     return Scaffold(
@@ -104,7 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       child: Text(
                         'CHAT WITH NEKKY',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
@@ -157,6 +158,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           child: Text(
                             message.text,
                             style: TextStyle(
+                              fontSize: 18,
                               color: isBot ? AppTheme.black : AppTheme.white,
                             ),
                           ),
@@ -170,17 +172,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              12,
+            padding: EdgeInsets.fromLTRB(
+              screenHeight * 0.02,
               8,
-              12,
-              90,
+              screenHeight * 0.02,
+              screenHeight * 0.09,
             ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: inputController,
+                    style: TextStyle(fontSize: 18.0),
                     decoration: InputDecoration(
                       hintText: 'พิมพ์ข้อความ...',
                       filled: true,

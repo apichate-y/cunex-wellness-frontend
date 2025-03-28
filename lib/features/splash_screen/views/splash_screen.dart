@@ -47,24 +47,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           Image.asset(bgImage, fit: BoxFit.cover),
 
           Positioned(
-            top: screenHeight * 0.31,
+            top: screenHeight * 0.29,
             left: 40,
             right: 40,
             child: Image.asset(
               'lib/assets/images/element/a.png',
               fit: BoxFit.contain,
+              height: screenHeight * 0.13,
             ),
           ),
 
           Positioned(
-            top: screenHeight * 0.34,
+            top: screenHeight * 0.33,
             left: 60,
             right: 60,
             child: Image.asset(
               'lib/assets/images/word/1.png',
               fit: BoxFit.contain,
+              height: screenHeight * 0.06,
             ),
           ),
+          
 
           Positioned(
             bottom: screenHeight * 0.22,
@@ -76,9 +79,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 duration: const Duration(milliseconds: 200),
                 child: Image.asset(
                   'lib/assets/images/mascot/nexky character-09.png',
-                  height: 300,
+                  height: screenHeight * 0.35,
                 ),
               ),
+            ),
+          ),
+
+          Positioned(
+            bottom: screenHeight * 0.16,
+            left: 60,
+            right: 60,
+            child: Image.asset(
+              'lib/assets/images/mascot/iconnie.png',
+              fit: BoxFit.contain,
+              height: screenHeight * 0.12,
             ),
           ),
         ],

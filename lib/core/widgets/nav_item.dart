@@ -18,39 +18,45 @@ class NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final bool isSelected = index == selectedIndex;
+
+    final double selectedHeight = screenHeight * 0.05;
+    final double selectedWidth = screenHeight * 0.09;
+    final double iconSize = screenHeight * 0.025;
 
     return GestureDetector(
       onTap: onTap,
-      child: isSelected
-          ? Container(
-              height: 45,
-              width: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(40),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  )
-                ],
-              ),
-              child: Center(
-                child: Image.asset(
-                  activeAssetPath,
-                  height: 50,
-                  width: 50,
+      child:
+          isSelected
+              ? Container(
+                height: selectedHeight,
+                width: selectedWidth,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
+                child: Center(
+                  child: Image.asset(
+                    activeAssetPath,
+                    height: iconSize * 2,
+                    width: iconSize * 2,
+                  ),
+                ),
+              )
+              : Image.asset(
+                assetPath,
+                height: iconSize,
+                width: iconSize,
+                color: Colors.white,
               ),
-            )
-          : Image.asset(
-              assetPath,
-              height: 28,
-              width: 28,
-              color: Colors.white,
-            ),
     );
   }
 }

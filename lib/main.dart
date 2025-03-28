@@ -1,6 +1,5 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:cunex_wellness/core/providers/navigator_key_provider.dart';
 import 'package:cunex_wellness/core/services/chatbot_service.dart';
 import 'package:cunex_wellness/core/services/preferences_manager.dart';
 import 'package:cunex_wellness/features/music/providers/audio_handler.dart';
@@ -48,22 +47,20 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'CUNEX: Wellness',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+
       builder:
-          (context, child) => ResponsiveBreakpoints.builder(
-            child: ClampingScrollWrapper.builder(context, child!),
+          (context, child) => ResponsiveWrapper.builder(
+            child,
+            maxWidth: 1200,
+            minWidth: 360,
+            defaultScale: true,
             breakpoints: [
-              const Breakpoint(start: 0, end: 479, name: MOBILE),
-              const Breakpoint(start: 480, end: 799, name: TABLET),
-              const Breakpoint(start: 800, end: 999, name: TABLET),
-              const Breakpoint(
-                start: 1000,
-                end: double.infinity,
-                name: DESKTOP,
-              ),
+              ResponsiveBreakpoint.resize(360, name: MOBILE),
+              ResponsiveBreakpoint.autoScale(600, name: TABLET),
+              ResponsiveBreakpoint.autoScale(800, name: TABLET),
+              ResponsiveBreakpoint.resize(1000, name: DESKTOP),
             ],
+            background: Container(color: const Color(0xFFF5F5F5)),
           ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -75,6 +72,13 @@ class MyApp extends ConsumerWidget {
       supportedLocales: const [Locale('th', 'TH')],
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: 'CHULALONGKORN',
+        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'CHULALONGKORN'),
+        primaryTextTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontFamily: 'CHULALONGKORN'),
+      ),
     );
   }
 }

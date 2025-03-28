@@ -31,6 +31,7 @@ final assetsPrecacheProvider = FutureProvider<void>((ref) async {
     'lib/assets/images/icons/เมฆ emotion/Untitled-24-10.png',
     'lib/assets/images/icons/เมฆ emotion/Untitled-24-11.png',
     'lib/assets/images/icons/เมฆ emotion/Untitled-24-12.png',
+    'lib/assets/images/mascot/iconnie.png',
     'lib/assets/images/mascot/nexky character-06.png',
     'lib/assets/images/mascot/nexky character-07.png',
     'lib/assets/images/mascot/nexky character-09.png',

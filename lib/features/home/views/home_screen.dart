@@ -83,7 +83,7 @@ class HomeScreen extends ConsumerWidget {
             right: 0,
             child: Image.asset(
               'lib/assets/images/mascot/nexky character-06.png',
-              height: 300,
+              height: screenHeight * 0.35,
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:cunex_wellness/config/color.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppbar extends StatelessWidget {
@@ -41,7 +42,7 @@ class CustomAppbar extends StatelessWidget {
                       width: barWidth,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: Colors.pinkAccent.shade100,
+                        color: AppTheme.rosePink,
                         borderRadius: BorderRadius.circular(40),
                       ),
                     );
@@ -66,7 +67,7 @@ class CustomAppbar extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.pink,
+                      color: AppTheme.rosePink
                     ),
                   ),
                 ),

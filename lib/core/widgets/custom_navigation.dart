@@ -15,11 +15,12 @@ class CustomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SizedBox(
       width: screenWidth,
-      height: 100,
+      height: screenHeight * 0.2,
       child: Stack(
         children: [
           Positioned(
@@ -29,13 +30,13 @@ class CustomNavigationBar extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Container(
-                    height: 55,
+                    height: screenHeight * 0.06,
                     padding: EdgeInsets.symmetric(horizontal: 32),
                     decoration: BoxDecoration(
                       color: AppTheme.rosePink,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

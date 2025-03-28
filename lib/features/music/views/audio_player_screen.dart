@@ -1,5 +1,7 @@
 // ✅ audio_player_screen.dart
 import 'package:audio_service/audio_service.dart';
+import 'package:cunex_wellness/config/color.dart';
+import 'package:cunex_wellness/core/services/background_service.dart';
 import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
 import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +50,13 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final audioState = ref.watch(audioPlayerProvider);
+    final backgroundImage = ref.watch(backgroundImageProvider);
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/images/bg/bg_night.png'),
+            image: AssetImage(backgroundImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -107,7 +110,7 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
                       child: const Icon(
                         Icons.music_note,
                         size: 100,
-                        color: Colors.pink,
+                        color: AppTheme.rosePink
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -132,8 +135,8 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
                               value: position.inSeconds.toDouble(),
                               max: total.inSeconds.toDouble().clamp(1, double.infinity),
                               onChanged: (value) => handler.seek(Duration(seconds: value.toInt())),
-                              activeColor: Colors.pink,
-                              inactiveColor: Colors.white,
+                              activeColor: AppTheme.rosePink,
+                              inactiveColor: AppTheme.white
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -153,22 +156,22 @@ class _AudioPlayerScreenState extends ConsumerState<AudioPlayerScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        const Icon(Icons.shuffle, color: Colors.white),
-                        const Icon(Icons.skip_previous, color: Colors.white),
+                        const Icon(Icons.shuffle, color: AppTheme.white),
+                        const Icon(Icons.skip_previous, color: AppTheme.white),
                         CircleAvatar(
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppTheme.white,
                           radius: 30,
                           child: IconButton(
                             icon: Icon(
                               audioState.isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: audioState.isPlaying ? Colors.pink : Colors.grey,
+                              color: audioState.isPlaying ? AppTheme.rosePink : Colors.grey,
                               size: 30,
                             ),
                             onPressed: () => ref.read(audioPlayerProvider.notifier).togglePlayPause(),
                           ),
                         ),
-                        const Icon(Icons.skip_next, color: Colors.white),
-                        const Icon(Icons.repeat, color: Colors.white),
+                        const Icon(Icons.skip_next, color: AppTheme.white),
+                        const Icon(Icons.repeat, color: AppTheme.white),
                       ],
                     ),
                   ],

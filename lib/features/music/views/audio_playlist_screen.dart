@@ -1,3 +1,4 @@
+import 'package:cunex_wellness/core/services/background_service.dart';
 import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
 import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:cunex_wellness/features/music/views/category_filter.dart';
@@ -104,7 +105,7 @@ class AudioPlaylistScreen extends ConsumerWidget {
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final audioFiles = ref.watch(audioFilesProvider);
-    final backgroundImage = 'lib/assets/images/bg/bg_night.png';
+    final backgroundImage = ref.watch(backgroundImageProvider);
 
     // 🔍 Search filtering
     final List<Map<String, String>> searchResults = [];

@@ -1,3 +1,4 @@
+import 'package:cunex_wellness/config/color.dart';
 import 'package:cunex_wellness/features/music/views/audio_playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,10 +41,10 @@ class CategoryFilterButton extends ConsumerWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(getIcon(category), color: Colors.pink, size: 32),
+              child: Icon(getIcon(category), color: AppTheme.rosePink, size: 32),
             ),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: Colors.white)),
+            Text(label, style: const TextStyle(color: AppTheme.white)),
           ],
         ),
       ),
