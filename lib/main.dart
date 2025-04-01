@@ -1,7 +1,5 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:cunex_wellness/core/services/chatbot_service.dart';
-import 'package:cunex_wellness/core/services/preferences_manager.dart';
 import 'package:cunex_wellness/features/music/providers/audio_handler.dart';
 import 'package:cunex_wellness/features/music/providers/audio_player_provider.dart';
 import 'package:cunex_wellness/routes/app_routes.dart';
@@ -9,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -29,8 +28,10 @@ void main() async {
     ),
   );
 
-  final botGender = await PreferencesManager.loadBotGender();
-  ChatBotService.setGender(botGender);
+  // final botGender = await PreferencesManager.loadBotGender();
+  // ChatBotService.setGender(botGender);
+
+  setUrlStrategy(const HashUrlStrategy());
 
   runApp(
     ProviderScope(
@@ -74,7 +75,9 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'CHULALONGKORN',
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'CHULALONGKORN'),
+        textTheme: Theme.of(
+          context,
+        ).textTheme.apply(fontFamily: 'CHULALONGKORN'),
         primaryTextTheme: Theme.of(
           context,
         ).textTheme.apply(fontFamily: 'CHULALONGKORN'),
