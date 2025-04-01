@@ -24,12 +24,15 @@ class LandingScreen extends ConsumerWidget {
             child: CustomNavigationBar(
               selectedIndex: selectedIndex,
               onTap: (index) {
+                final paths = [
+                  '/calendar',
+                  '/chat',
+                  '/home',
+                  '/playlist',
+                  '/profile',
+                ];
                 ref.read(selectedIndexProvider.notifier).state = index;
-                if (index == 0) context.go('/calendar');
-                if (index == 1) context.go('/chat');
-                if (index == 2) context.go('/home');
-                if (index == 3) context.go('/playlist');
-                if (index == 4) context.go('/profile');
+                context.go(paths[index]);
               },
             ),
           ),

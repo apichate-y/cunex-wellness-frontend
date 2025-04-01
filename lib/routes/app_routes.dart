@@ -1,16 +1,12 @@
 import 'package:cunex_wellness/core/providers/navigator_key_provider.dart';
 import 'package:cunex_wellness/features/avartar_customizer/views/bot_gender_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/calendar_screen.dart';
-import 'package:cunex_wellness/features/calendar/views/intro_calendar_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/qr_scan_screen.dart';
 import 'package:cunex_wellness/features/chat_bot/views/chat_screen.dart';
-import 'package:cunex_wellness/features/chat_bot/views/intro_chat_screen.dart';
 import 'package:cunex_wellness/features/home/views/home_screen.dart';
 import 'package:cunex_wellness/features/landing/views/landing_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_player_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_playlist_screen.dart';
-import 'package:cunex_wellness/features/music/views/intro_audio_screen.dart';
-import 'package:cunex_wellness/features/profile/views/intro_personal_info_screen.dart';
 import 'package:cunex_wellness/features/profile/views/personal_info_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,24 +18,30 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: navigatorKey,
     initialLocation: '/',
+    debugLogDiagnostics: true,
     routes: [
+      // Splash Screen เป็นจุดเริ่มต้น
       GoRoute(
         path: '/',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
+
+      // เป็นหน้าถัดไปหลัง Splash
       GoRoute(
         path: '/botgender',
         name: 'botgender',
         builder: (context, state) => const BotGenderScreen(),
       ),
+
+      // Shell Route สำหรับหน้าที่มี Navigation Bar
       ShellRoute(
         builder: (context, state, child) => LandingScreen(child: child),
         routes: [
-          GoRoute(
-            path: '/intro-calendar',
-            builder: (context, state) => const IntroCalendarScreen(),
-          ),
+          // GoRoute(
+          //   path: '/intro-calendar',
+          //   builder: (context, state) => const IntroCalendarScreen(),
+          // ),
           GoRoute(
             path: '/calendar',
             builder: (context, state) => const CalendarScreen(),
@@ -48,10 +50,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/qr-scan',
             builder: (context, state) => const QrScanScreen(),
           ),
-          GoRoute(
-            path: '/intro-chat',
-            builder: (context, state) => const IntroChatScreen(),
-          ),
+          // GoRoute(
+          //   path: '/intro-chat',
+          //   builder: (context, state) => const IntroChatScreen(),
+          // ),
           GoRoute(
             path: '/chat',
             name: 'chat',
@@ -61,10 +63,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/home',
             builder: (context, state) => const HomeScreen(),
           ),
-          GoRoute(
-            path: '/intro-audio',
-            builder: (context, state) => const IntroAudioScreen(),
-          ),
+          // GoRoute(
+          //   path: '/intro-audio',
+          //   builder: (context, state) => const IntroAudioScreen(),
+          // ),
           GoRoute(
             path: '/playlist',
             builder: (context, state) => const AudioPlaylistScreen(),
@@ -80,10 +82,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
-          GoRoute(
-            path: '/intro-profile',
-            builder: (context, state) => IntroPersonalInfoScreen(),
-          ),
+          // GoRoute(
+          //   path: '/intro-profile',
+          //   builder: (context, state) => IntroPersonalInfoScreen(),
+          // ),
           GoRoute(
             path: '/profile',
             builder: (context, state) => PersonalInfoScreen(),

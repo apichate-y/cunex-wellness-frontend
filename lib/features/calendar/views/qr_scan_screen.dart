@@ -17,7 +17,6 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final qrCode = ref.watch(qrCodeProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
