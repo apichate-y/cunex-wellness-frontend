@@ -1,13 +1,44 @@
-import 'package:cunex_wellness/core/enums/bot_gender.dart';
-import 'package:cunex_wellness/core/providers/assets_precache_provider.dart';
+import 'dart:developer';
+
 import 'package:cunex_wellness/core/services/background_service.dart';
-import 'package:cunex_wellness/core/services/preferences_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-final botGenderProvider = FutureProvider<BotGender>((ref) async {
-  return await PreferencesManager.loadBotGender();
+// Provider สำหรับติดตามสถานะการโหลดรูปภาพ
+final imagesLoadedProvider = StateProvider<bool>((ref) => false);
+
+// Provider สำหรับการโหลดรูปภาพ
+final imageLoaderProvider = FutureProvider.family<void, BuildContext>((
+  ref,
+  context,
+) async {
+  try {
+    // โหลดรูปภาพทีละรูป
+    await precacheImage(
+      const AssetImage('lib/assets/images/element/a.png'),
+      context,
+    );
+    await precacheImage(
+      const AssetImage('lib/assets/images/word/1.png'),
+      context,
+    );
+    await precacheImage(
+      const AssetImage('lib/assets/images/mascot/nexky character-09.png'),
+      context,
+    );
+    await precacheImage(
+      const AssetImage('lib/assets/images/mascot/iconnie.png'),
+      context,
+    );
+
+    // เมื่อโหลดเสร็จให้อัพเดท state
+    ref.read(imagesLoadedProvider.notifier).state = true;
+  } catch (e) {
+    log('Error loading images: $e');
+    // กรณีเกิดข้อผิดพลาดให้ถือว่าโหลดเสร็จแล้ว
+    ref.read(imagesLoadedProvider.notifier).state = true;
+  }
 });
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -18,26 +49,28 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-
-
-@override
+  @override
   void initState() {
     super.initState();
-    
-    Future.microtask(() => ref.read(assetsPrecacheProvider));
+    // เริ่มโหลดรูปภาพเมื่อ widget ถูกสร้าง
+    Future.microtask(() => ref.read(imageLoaderProvider(context)));
   }
 
-  void onMascotTap() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (!mounted) return;
-    context.go('/botgender');
+  void onMascotTap() {
+    try {
+      // ใช้ try-catch สำหรับการนำทาง
+      context.go('/botgender');
+    } catch (e) {
+      log('Navigation error: $e');
+      // Fallback สำหรับ iOS Safari
+      Navigator.of(context).pushReplacementNamed('/botgender');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final bgImage = ref.watch(backgroundImageProvider);
-
+    final imagesLoaded = ref.watch(imagesLoadedProvider);
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -46,55 +79,60 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         children: [
           Image.asset(bgImage, fit: BoxFit.cover),
 
-          Positioned(
-            top: screenHeight * 0.29,
-            left: 40,
-            right: 40,
-            child: Image.asset(
-              'lib/assets/images/element/a.png',
-              fit: BoxFit.contain,
-              height: screenHeight * 0.13,
-            ),
-          ),
+          // แสดงตัว loading ถ้ารูปภาพยังโหลดไม่เสร็จ
+          if (!imagesLoaded) const Center(child: CircularProgressIndicator()),
 
-          Positioned(
-            top: screenHeight * 0.33,
-            left: 60,
-            right: 60,
-            child: Image.asset(
-              'lib/assets/images/word/1.png',
-              fit: BoxFit.contain,
-              height: screenHeight * 0.06,
+          // แสดงเนื้อหาเมื่อรูปภาพโหลดเสร็จแล้ว
+          if (imagesLoaded) ...[
+            Positioned(
+              top: screenHeight * 0.29,
+              left: 40,
+              right: 40,
+              child: Image.asset(
+                'lib/assets/images/element/a.png',
+                fit: BoxFit.contain,
+                height: screenHeight * 0.13,
+              ),
             ),
-          ),
-          
 
-          Positioned(
-            bottom: screenHeight * 0.22,
-            left: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: onMascotTap,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: Image.asset(
-                  'lib/assets/images/mascot/nexky character-09.png',
-                  height: screenHeight * 0.35,
+            Positioned(
+              top: screenHeight * 0.33,
+              left: 60,
+              right: 60,
+              child: Image.asset(
+                'lib/assets/images/word/1.png',
+                fit: BoxFit.contain,
+                height: screenHeight * 0.06,
+              ),
+            ),
+
+            Positioned(
+              bottom: screenHeight * 0.22,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: onMascotTap,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Image.asset(
+                    'lib/assets/images/mascot/nexky character-09.png',
+                    height: screenHeight * 0.35,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          Positioned(
-            bottom: screenHeight * 0.16,
-            left: 60,
-            right: 60,
-            child: Image.asset(
-              'lib/assets/images/mascot/iconnie.png',
-              fit: BoxFit.contain,
-              height: screenHeight * 0.12,
+            Positioned(
+              bottom: screenHeight * 0.16,
+              left: 60,
+              right: 60,
+              child: Image.asset(
+                'lib/assets/images/mascot/iconnie.png',
+                fit: BoxFit.contain,
+                height: screenHeight * 0.12,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

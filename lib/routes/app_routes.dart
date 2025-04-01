@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cunex_wellness/core/providers/navigator_key_provider.dart';
 import 'package:cunex_wellness/features/avartar_customizer/views/bot_gender_screen.dart';
 import 'package:cunex_wellness/features/calendar/views/calendar_screen.dart';
@@ -8,6 +10,7 @@ import 'package:cunex_wellness/features/landing/views/landing_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_player_screen.dart';
 import 'package:cunex_wellness/features/music/views/audio_playlist_screen.dart';
 import 'package:cunex_wellness/features/profile/views/personal_info_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cunex_wellness/features/splash_screen/views/splash_screen.dart';
@@ -19,6 +22,24 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: navigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
+    routerNeglect: true,
+    errorBuilder: (context, state) {
+      log('GoRouter error: ${state.error}');
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('เกิดข้อผิดพลาดในการนำทาง'),
+              ElevatedButton(
+                onPressed: () => context.go('/home'),
+                child: const Text('กลับสู่หน้าหลัก'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
     routes: [
       // Splash Screen เป็นจุดเริ่มต้น
       GoRoute(
