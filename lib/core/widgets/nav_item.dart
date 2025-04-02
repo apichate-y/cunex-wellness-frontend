@@ -1,3 +1,4 @@
+import 'package:cunex_wellness/core/widgets/optimized_image.dart';
 import 'package:flutter/material.dart';
 
 class NavItem extends StatelessWidget {
@@ -44,15 +45,15 @@ class NavItem extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Image.asset(
-                    activeAssetPath,
+                  child: OptimizedImage(
+                    assetPath: activeAssetPath,
                     height: iconSize * 2,
                     width: iconSize * 2,
                   ),
                 ),
               )
-              : Image.asset(
-                assetPath,
+              : OptimizedImage(
+                assetPath: assetPath,
                 height: iconSize,
                 width: iconSize,
                 color: Colors.white,

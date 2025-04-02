@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cunex_wellness/config/color.dart';
+import 'package:cunex_wellness/core/widgets/optimized_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,7 +93,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           height: iconSize,
           child: FittedBox(
             fit: BoxFit.contain,
-            child: Image.asset(moodImages[index]),
+            child: OptimizedImage(assetPath: moodImages[index]),
           ),
         ),
       );
@@ -178,7 +179,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   ),
                                 ],
                                 onChanged: (value) {
-                                  if(value == "add"){
+                                  if (value == "add") {
                                     context.push('/qr-scan');
                                   }
                                 },
@@ -346,12 +347,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
-                    final moodIndex = moodData[DateTime.utc(date.year, date.month, date.day)];
+                    final moodIndex =
+                        moodData[DateTime.utc(date.year, date.month, date.day)];
                     if (moodIndex != null) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 30.0),
-                          child: Image.asset(moodImages[moodIndex], height: 22),
+                          child: OptimizedImage(
+                            assetPath: moodImages[moodIndex],
+                            height: 22,
+                          ),
                         ),
                       );
                     }
