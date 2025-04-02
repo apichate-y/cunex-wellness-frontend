@@ -78,7 +78,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          OptimizedImage(assetPath: bgImage, fit: BoxFit.cover),
+          Image.asset(bgImage, fit: BoxFit.cover),
 
           // แสดงตัว loading ถ้ารูปภาพยังโหลดไม่เสร็จ
           if (!imagesLoaded) const Center(child: CircularProgressIndicator()),
@@ -89,8 +89,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               top: screenHeight * 0.29,
               left: 40,
               right: 40,
-              child: OptimizedImage(
-                assetPath: 'lib/assets/images/element/a.png',
+              child: Image.asset(
+                'lib/assets/images/element/a.png',
                 fit: BoxFit.contain,
                 height: screenHeight * 0.13,
               ),
@@ -100,8 +100,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               top: screenHeight * 0.33,
               left: 60,
               right: 60,
-              child: OptimizedImage(
-                assetPath: 'lib/assets/images/word/1.png',
+              child: Image.asset(
+                'lib/assets/images/word/1.png',
                 fit: BoxFit.contain,
                 height: screenHeight * 0.06,
               ),
@@ -115,9 +115,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 onTap: onMascotTap,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
-                  child: OptimizedImage(
-                    assetPath:
-                        'lib/assets/images/mascot/nexky character-09.png',
+                  child: Image.asset(
+                    'lib/assets/images/mascot/nexky character-09.png',
                     height: screenHeight * 0.35,
                   ),
                 ),
@@ -128,8 +127,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               bottom: screenHeight * 0.16,
               left: 60,
               right: 60,
-              child: OptimizedImage(
-                assetPath: 'lib/assets/images/mascot/iconnie.png',
+              child: Image.asset(
+                'lib/assets/images/mascot/iconnie.png',
                 fit: BoxFit.contain,
                 height: screenHeight * 0.12,
               ),

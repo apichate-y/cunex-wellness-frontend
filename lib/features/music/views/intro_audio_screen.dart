@@ -19,7 +19,7 @@ class IntroAudioScreen extends ConsumerWidget {
         fit: StackFit.expand,
         children: [
           // Background image
-          OptimizedImage(assetPath: bgImage, fit: BoxFit.cover),
+          Image.asset(bgImage, fit: BoxFit.cover),
 
           // Appbar
           Positioned(
@@ -43,8 +43,8 @@ class IntroAudioScreen extends ConsumerWidget {
                 children: [
                   Positioned(
                     left: 0,
-                    child: OptimizedImage(
-                      assetPath: 'lib/assets/images/element/b.png',
+                    child: Image.asset(
+                      'lib/assets/images/element/b.png',
                       fit: BoxFit.contain,
                       height: 120,
                     ),
@@ -53,8 +53,8 @@ class IntroAudioScreen extends ConsumerWidget {
                     top: 20,
                     left: -50,
                     right: 0,
-                    child: OptimizedImage(
-                      assetPath: 'lib/assets/images/word/11.png',
+                    child: Image.asset(
+                      'lib/assets/images/word/11.png',
                       fit: BoxFit.contain,
                       height: 50,
                     ),
@@ -66,8 +66,8 @@ class IntroAudioScreen extends ConsumerWidget {
                       onTap: () {
                         context.push('/playlist'); // สำหรับ GoRouter
                       },
-                      child: OptimizedImage(
-                        assetPath: 'lib/assets/images/word/4.png',
+                      child: Image.asset(
+                        'lib/assets/images/word/4.png',
                         scale: 9,
                       ),
                     ),
@@ -82,8 +82,8 @@ class IntroAudioScreen extends ConsumerWidget {
             bottom: screenHeight * 0.22,
             left: 0,
             right: 0,
-            child: OptimizedImage(
-              assetPath: 'lib/assets/images/mascot/nexky character-07.png',
+            child: Image.asset(
+              'lib/assets/images/mascot/nexky character-07.png',
               height: 300,
             ),
           ),

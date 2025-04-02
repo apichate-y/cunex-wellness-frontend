@@ -21,7 +21,7 @@ class PersonalInfoScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          OptimizedImage(assetPath: bgImage, fit: BoxFit.cover),
+          Image.asset(bgImage, fit: BoxFit.cover),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {

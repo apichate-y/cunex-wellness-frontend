@@ -19,7 +19,7 @@ class IntroPersonalInfoScreen extends ConsumerWidget {
         fit: StackFit.expand,
         children: [
           // Background image
-          OptimizedImage(assetPath: bgImage, fit: BoxFit.cover),
+          Image.asset(bgImage, fit: BoxFit.cover),
 
           // Appbar
           Positioned(
@@ -43,8 +43,8 @@ class IntroPersonalInfoScreen extends ConsumerWidget {
                 children: [
                   Positioned(
                     left: 0,
-                    child: OptimizedImage(
-                      assetPath: 'lib/assets/images/element/b.png',
+                    child: Image.asset(
+                      'lib/assets/images/element/b.png',
                       fit: BoxFit.contain,
                       height: 120,
                     ),
@@ -53,8 +53,8 @@ class IntroPersonalInfoScreen extends ConsumerWidget {
                     top: 20,
                     left: -50,
                     right: 0,
-                    child: OptimizedImage(
-                      assetPath: 'lib/assets/images/word/10.png',
+                    child: Image.asset(
+                      'lib/assets/images/word/10.png',
                       fit: BoxFit.contain,
                       height: 65,
                     ),
@@ -66,8 +66,8 @@ class IntroPersonalInfoScreen extends ConsumerWidget {
                       onTap: () {
                         context.push('/profile'); // สำหรับ GoRouter
                       },
-                      child: OptimizedImage(
-                        assetPath: 'lib/assets/images/word/4.png',
+                      child: Image.asset(
+                        'lib/assets/images/word/4.png',
                         scale: 9,
                       ),
                     ),
@@ -82,8 +82,8 @@ class IntroPersonalInfoScreen extends ConsumerWidget {
             bottom: screenHeight * 0.22,
             left: 0,
             right: 0,
-            child: OptimizedImage(
-              assetPath: 'lib/assets/images/mascot/nexky character-06.png',
+            child: Image.asset(
+              'lib/assets/images/mascot/nexky character-06.png',
               height: 300,
             ),
           ),

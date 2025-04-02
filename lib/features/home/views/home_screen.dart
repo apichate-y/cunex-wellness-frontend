@@ -53,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         fit: StackFit.expand,
         children: [
           // Background image
-          OptimizedImage(assetPath: bgImage, fit: BoxFit.cover),
+          Image.asset(bgImage, fit: BoxFit.cover),
 
           // Appbar
           Positioned(
@@ -80,7 +80,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           //       children: [
           //         Positioned(
           //           left: 0,
-          //           child: OptimizedImage(
+          //           child: Image.asset(
           //             'lib/assets/images/element/b.png',
           //             fit: BoxFit.contain,
           //             height: 120,
@@ -90,7 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           //           top: 20,
           //           left: -50,
           //           right: 0,
-          //           child: OptimizedImage(
+          //           child: Image.asset(
           //             'lib/assets/images/word/3.png',
           //             fit: BoxFit.contain,
           //             height: 50,
@@ -103,7 +103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           //             onTap: () {
           //               context.push('/chat'); // สำหรับ GoRouter
           //             },
-          //             child: OptimizedImage(
+          //             child: Image.asset(
           //               'lib/assets/images/word/4.png',
           //               scale: 9,
           //             ),
@@ -121,8 +121,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               bottom: screenHeight * 0.22,
               left: 0,
               right: 0,
-              child: OptimizedImage(
-                assetPath: 'lib/assets/images/mascot/nexky character-06.png',
+              child: Image.asset(
+                'lib/assets/images/mascot/nexky character-06.png',
                 height: screenHeight * 0.35,
               ),
             ),

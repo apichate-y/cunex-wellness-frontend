@@ -45,15 +45,15 @@ class NavItem extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: OptimizedImage(
-                    assetPath: activeAssetPath,
+                  child: Image.asset(
+                    activeAssetPath,
                     height: iconSize * 2,
                     width: iconSize * 2,
                   ),
                 ),
               )
-              : OptimizedImage(
-                assetPath: assetPath,
+              : Image.asset(
+                assetPath,
                 height: iconSize,
                 width: iconSize,
                 color: Colors.white,

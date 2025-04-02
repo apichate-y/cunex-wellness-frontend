@@ -93,7 +93,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           height: iconSize,
           child: FittedBox(
             fit: BoxFit.contain,
-            child: OptimizedImage(assetPath: moodImages[index]),
+            child: Image.asset(moodImages[index]),
           ),
         ),
       );
@@ -353,10 +353,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 30.0),
-                          child: OptimizedImage(
-                            assetPath: moodImages[moodIndex],
-                            height: 22,
-                          ),
+                          child: Image.asset(moodImages[moodIndex], height: 22),
                         ),
                       );
                     }
