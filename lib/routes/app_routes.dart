@@ -23,6 +23,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     debugLogDiagnostics: true,
     routerNeglect: true,
+    redirect: (context, state) {
+      try {
+        if (state.path =='/'){
+          return null;
+        }
+      } catch (e) {
+        log('Redirect error: $e');
+      }
+      return null;
+    },
     errorBuilder: (context, state) {
       log('GoRouter error: ${state.error}');
       return Scaffold(
