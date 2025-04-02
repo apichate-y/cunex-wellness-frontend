@@ -97,7 +97,7 @@ flutter:
     - lib/assets/images/word/
     - lib/assets/images/แต่งตัวnexky/
 
-    - lib/assets/lang/
+    # - lib/assets/lang/
 
     - lib/assets/sounds/chill/
     - lib/assets/sounds/focus/
