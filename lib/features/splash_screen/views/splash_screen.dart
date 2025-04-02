@@ -1,139 +1,97 @@
-import 'dart:developer';
-
-import 'package:cunex_wellness/core/services/background_service.dart';
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
+import 'package:cunex_wellness/core/controllers/background_controller.dart';
+import 'package:cunex_wellness/core/widgets/cached_image.dart';
+import 'package:cunex_wellness/features/splash_screen/providers/splash_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 
-// Provider สำหรับติดตามสถานะการโหลดรูปภาพ
-final imagesLoadedProvider = StateProvider<bool>((ref) => false);
-
-// Provider สำหรับการโหลดรูปภาพ
-final imageLoaderProvider = FutureProvider.family<void, BuildContext>((
-  ref,
-  context,
-) async {
-  try {
-    // โหลดรูปภาพทีละรูป
-    await precacheImage(
-      const AssetImage('lib/assets/images/element/a.png'),
-      context,
-    );
-    await precacheImage(
-      const AssetImage('lib/assets/images/word/1.png'),
-      context,
-    );
-    await precacheImage(
-      const AssetImage('lib/assets/images/mascot/nexky character-09.png'),
-      context,
-    );
-    await precacheImage(
-      const AssetImage('lib/assets/images/mascot/iconnie.png'),
-      context,
-    );
-
-    // เมื่อโหลดเสร็จให้อัพเดท state
-    ref.read(imagesLoadedProvider.notifier).state = true;
-  } catch (e) {
-    log('Error loading images: $e');
-    // กรณีเกิดข้อผิดพลาดให้ถือว่าโหลดเสร็จแล้ว
-    ref.read(imagesLoadedProvider.notifier).state = true;
-  }
-});
-
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
-  ConsumerState<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // เริ่มโหลดรูปภาพเมื่อ widget ถูกสร้าง
-    Future.microtask(() => ref.read(imageLoaderProvider(context)));
-  }
-
-  void onMascotTap() {
-    try {
-      // ใช้ try-catch สำหรับการนำทาง
-      context.go('/botgender');
-    } catch (e) {
-      log('Navigation error: $e');
-      // Fallback สำหรับ iOS Safari
-      Navigator.of(context).pushReplacementNamed('/botgender');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final bgImage = ref.watch(backgroundImageProvider);
-    final imagesLoaded = ref.watch(imagesLoadedProvider);
+    // ใช้ GetX Controller แทน Riverpod
+    final backgroundController = Get.find<BackgroundController>();
+    final controller = Get.find<SplashController>();
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(bgImage, fit: BoxFit.cover),
-
-          // แสดงตัว loading ถ้ารูปภาพยังโหลดไม่เสร็จ
-          if (!imagesLoaded) const Center(child: CircularProgressIndicator()),
-
-          // แสดงเนื้อหาเมื่อรูปภาพโหลดเสร็จแล้ว
-          if (imagesLoaded) ...[
-            Positioned(
-              top: screenHeight * 0.29,
-              left: 40,
-              right: 40,
-              child: Image.asset(
-                'lib/assets/images/element/a.png',
-                fit: BoxFit.contain,
-                height: screenHeight * 0.13,
-              ),
+          // Background
+          Obx(
+            () => CachedImage(
+              imagePath: backgroundController.backgroundImage.value,
+              fit: BoxFit.cover,
             ),
+          ),
 
-            Positioned(
-              top: screenHeight * 0.33,
-              left: 60,
-              right: 60,
-              child: Image.asset(
-                'lib/assets/images/word/1.png',
-                fit: BoxFit.contain,
-                height: screenHeight * 0.06,
-              ),
-            ),
+          // Loading Indicator
+          Obx(
+            () =>
+                !controller.isImagesLoaded.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : const SizedBox.shrink(),
+          ),
 
-            Positioned(
-              bottom: screenHeight * 0.22,
-              left: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: onMascotTap,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: Image.asset(
-                    'lib/assets/images/mascot/nexky character-09.png',
-                    height: screenHeight * 0.35,
-                  ),
-                ),
-              ),
-            ),
+          // Content
+          Obx(
+            () =>
+                controller.isImagesLoaded.value
+                    ? Stack(
+                      children: [
+                        // Speech bubble
+                        Positioned(
+                          top: screenHeight * 0.29,
+                          left: 40,
+                          right: 40,
+                          child: CachedImage(
+                            imagePath: 'lib/assets/images/element/a.png',
+                            height: screenHeight * 0.13,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
 
-            Positioned(
-              bottom: screenHeight * 0.16,
-              left: 60,
-              right: 60,
-              child: Image.asset(
-                'lib/assets/images/mascot/iconnie.png',
-                fit: BoxFit.contain,
-                height: screenHeight * 0.12,
-              ),
-            ),
-          ],
+                        // Text image
+                        Positioned(
+                          top: screenHeight * 0.33,
+                          left: 60,
+                          right: 60,
+                          child: CachedImage(
+                            imagePath: 'lib/assets/images/word/1.png',
+                            height: screenHeight * 0.06,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+
+                        // Mascot with tap gesture
+                        Positioned(
+                          bottom: screenHeight * 0.22,
+                          left: 0,
+                          right: 0,
+                          child: CachedImage(
+                            imagePath:
+                                'lib/assets/images/mascot/nexky character-09.png',
+                            height: screenHeight * 0.35,
+                            onTap: () => controller.navigateToBotGender(),
+                          ),
+                        ),
+
+                        // Logo
+                        Positioned(
+                          bottom: screenHeight * 0.16,
+                          left: 60,
+                          right: 60,
+                          child: CachedImage(
+                            imagePath: 'lib/assets/images/mascot/iconnie.png',
+                            height: screenHeight * 0.12,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
+                    )
+                    : const SizedBox.shrink(),
+          ),
         ],
       ),
     );

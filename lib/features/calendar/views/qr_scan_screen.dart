@@ -1,23 +1,29 @@
 import 'package:cunex_wellness/config/color.dart';
 import 'package:cunex_wellness/features/calendar/providers/qr_code_provider.dart';
+import 'package:cunex_wellness/features/calendar/views/qr_scanner_overlay.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'qr_scanner_overlay.dart';
 
-class QrScanScreen extends ConsumerStatefulWidget {
+class QrScanScreen extends StatefulWidget {
   const QrScanScreen({super.key});
 
   @override
-  ConsumerState<QrScanScreen> createState() => _QrScanScreenState();
+  State<QrScanScreen> createState() => _QrScanScreenState();
 }
 
-class _QrScanScreenState extends ConsumerState<QrScanScreen> {
+class _QrScanScreenState extends State<QrScanScreen> {
   final MobileScannerController cameraController = MobileScannerController();
+  late QrScanController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<QrScanController>();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenHeight = constraints.maxHeight;
@@ -33,8 +39,8 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
                   final barcodes = capture.barcodes;
                   if (barcodes.isNotEmpty) {
                     final code = barcodes.first.rawValue;
-                    if (code != null && code != ref.read(qrCodeProvider)) {
-                      ref.read(qrCodeProvider.notifier).setCode(code);
+                    if (code != null && code != controller.qrCode.value) {
+                      controller.setCode(code);
 
                       showDialog(
                         context: context,
@@ -46,7 +52,7 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    ref.read(qrCodeProvider.notifier).clear();
+                                    controller.clear();
                                   },
                                   child: const Text("OK"),
                                 ),
@@ -71,7 +77,7 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
                       left: 16,
                       child: IconButton(
                         icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Get.back(),
                       ),
                     ),
 
@@ -129,7 +135,7 @@ class _QrScanScreenState extends ConsumerState<QrScanScreen> {
                           16,
                           16,
                           screenHeight < 600 ? 16 : 24,
-                        ), // responsive padding
+                        ),
                         color: Colors.white,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

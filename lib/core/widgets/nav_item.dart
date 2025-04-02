@@ -1,4 +1,4 @@
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
+import 'package:cunex_wellness/core/widgets/cached_image.dart';
 import 'package:flutter/material.dart';
 
 class NavItem extends StatelessWidget {
@@ -26,6 +26,7 @@ class NavItem extends StatelessWidget {
     final double selectedWidth = screenHeight * 0.09;
     final double iconSize = screenHeight * 0.025;
 
+    // ใช้ CachedImage แทน Image.asset
     return GestureDetector(
       onTap: onTap,
       child:
@@ -36,7 +37,7 @@ class NavItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(50),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 4,
@@ -45,15 +46,15 @@ class NavItem extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Image.asset(
-                    activeAssetPath,
+                  child: CachedImage(
+                    imagePath: activeAssetPath,
                     height: iconSize * 2,
                     width: iconSize * 2,
                   ),
                 ),
               )
-              : Image.asset(
-                assetPath,
+              : CachedImage(
+                imagePath: assetPath,
                 height: iconSize,
                 width: iconSize,
                 color: Colors.white,

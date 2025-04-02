@@ -1,99 +1,46 @@
 import 'dart:io';
-
 import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
+import 'package:cunex_wellness/core/widgets/cached_image.dart';
+import 'package:cunex_wellness/features/calendar/providers/calendar_controller.dart';
+import 'package:cunex_wellness/routes/app_pages.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
-final moodDataProvider =
-    StateNotifierProvider<MoodDataNotifier, Map<DateTime, int>>((ref) {
-      return MoodDataNotifier();
-    });
-
-class MoodDataNotifier extends StateNotifier<Map<DateTime, int>> {
-  MoodDataNotifier()
-    : super({
-        DateTime.utc(2025, 2, 3): 0,
-        DateTime.utc(2025, 2, 4): 1,
-        DateTime.utc(2025, 2, 6): 2,
-        DateTime.utc(2025, 2, 7): 3,
-        DateTime.utc(2025, 2, 12): 4,
-        DateTime.utc(2025, 2, 13): 5,
-        DateTime.utc(2025, 2, 14): 0,
-        DateTime.utc(2025, 2, 17): 2,
-      });
-
-  void setMood(DateTime date, int moodIndex) {
-    final key = DateTime.utc(date.year, date.month, date.day);
-    state = {...state, key: moodIndex};
-  }
-}
-
-final moodImages = [
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-07.png',
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-08.png',
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-09.png',
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-10.png',
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-11.png',
-  'lib/assets/images/icons/เมฆ emotion/Untitled-24-12.png',
-];
-
-final selectedDayProvider = StateProvider<DateTime?>((ref) => DateTime.now());
-final focusedDayProvider = StateProvider<DateTime>((ref) => DateTime.now());
-final showNoteProvider = StateProvider<bool>((ref) => false);
-final noteTextProvider = StateProvider<String>((ref) => "");
-
-final imageListProvider = StateProvider<List<XFile>>((ref) => []);
-final selectedMoodProvider = StateProvider<int?>((ref) => null);
-final panelPositionProvider = StateProvider<double>((ref) => 0);
-
-class CalendarScreen extends ConsumerStatefulWidget {
+class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
+  State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends ConsumerState<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen> {
   final TextEditingController noteController = TextEditingController();
   final panelController = PanelController();
-  final moodImages = [
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-07.png',
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-08.png',
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-09.png',
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-10.png',
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-11.png',
-    'lib/assets/images/icons/เมฆ emotion/Untitled-24-12.png',
-  ];
+  late CalendarController controller;
 
-  Future<void> pickImages() async {
-    final picker = ImagePicker();
-    final pickedFiles = await picker.pickMultiImage();
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
-      final currentImages = ref.read(imageListProvider);
-      final updated = [...currentImages, ...pickedFiles].take(9).toList();
-      ref.read(imageListProvider.notifier).state = updated;
-    }
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<CalendarController>();
   }
 
   List<Widget> _buildMoodSelector(double iconSize) {
     return List.generate(6, (index) {
       return GestureDetector(
         onTap: () {
-          ref.read(selectedMoodProvider.notifier).state = index;
+          controller.selectedMood.value = index;
         },
         child: SizedBox(
           width: iconSize,
           height: iconSize,
           child: FittedBox(
             fit: BoxFit.contain,
-            child: Image.asset(moodImages[index]),
+            child: CachedImage(imagePath: controller.moodImages[index]),
           ),
         ),
       );
@@ -102,13 +49,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedDay = ref.watch(selectedDayProvider);
-    final focusedDay = ref.watch(focusedDayProvider);
-    final moodData = ref.watch(moodDataProvider);
-    final images = ref.watch(imageListProvider);
-    final selectedMood = ref.watch(selectedMoodProvider);
-    final panelPosition = ref.watch(panelPositionProvider);
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final iconSize = screenWidth * 0.14;
@@ -123,7 +63,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           maxHeight: screenHeight * 0.85,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
           onPanelSlide: (position) {
-            ref.read(panelPositionProvider.notifier).state = position;
+            controller.panelPosition.value = position;
           },
           panel: Padding(
             padding: EdgeInsets.symmetric(
@@ -134,142 +74,162 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (selectedMood == null) ...[
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 3,
-                      crossAxisSpacing: screenWidth * 0.04,
-                      mainAxisSpacing: screenWidth * 0.04,
-                      children: _buildMoodSelector(iconSize),
-                    ),
-                  ] else ...[
-                    if (panelPosition > 0.95)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage(
-                                  'lib/assets/images/element/j.png',
+                  Obx(() {
+                    if (controller.selectedMood.value == null) {
+                      return GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 3,
+                        crossAxisSpacing: screenWidth * 0.04,
+                        mainAxisSpacing: screenWidth * 0.04,
+                        children: _buildMoodSelector(iconSize),
+                      );
+                    } else {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Obx(() {
+                            if (controller.panelPosition.value > 0.95) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
                                 ),
-                              ),
-                            ),
-
-                            Align(
-                              alignment: Alignment.center,
-                              child: DropdownButton<String>(
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 'everyone',
-                                    child: Text('Everyone'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'add',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.add),
-                                        SizedBox(width: 4),
-                                        Text('add friend'),
-                                      ],
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: AssetImage(
+                                          'lib/assets/images/element/j.png',
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                                onChanged: (value) {
-                                  if (value == "add") {
-                                    context.push('/qr-scan');
-                                  }
-                                },
-                                value: 'everyone',
-                              ),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: DropdownButton<String>(
+                                        items: const [
+                                          DropdownMenuItem(
+                                            value: 'everyone',
+                                            child: Text('Everyone'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'add',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.add),
+                                                SizedBox(width: 4),
+                                                Text('add friend'),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                        onChanged: (value) {
+                                          if (value == "add") {
+                                            Get.toNamed(Routes.QR_SCAN);
+                                          }
+                                        },
+                                        value: 'everyone',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                          const Text(
+                            'วันนี้เป็นยังไงบ้าง เล่าให้ฟังหน่อยสิ',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.rosePink,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                      ),
-                    const Text(
-                      'วันนี้เป็นยังไงบ้าง เล่าให้ฟังหน่อยสิ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.rosePink,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: noteController,
-                      minLines: 4,
-                      maxLines: 6,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: AppTheme.rosePink,
-                        hintText: "add note...",
-                        hintStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: images.length < 9 ? images.length + 1 : 9,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            childAspectRatio: 1,
                           ),
-                      itemBuilder: (context, index) {
-                        if (index < images.length) {
-                          final img = images[index];
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child:
-                                kIsWeb
-                                    ? Image.network(img.path, fit: BoxFit.cover)
-                                    : Image.file(
-                                      File(img.path),
-                                      fit: BoxFit.cover,
-                                    ),
-                          );
-                        } else {
-                          return GestureDetector(
-                            onTap: pickImages,
-                            child: Container(
-                              decoration: BoxDecoration(
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: noteController,
+                            minLines: 4,
+                            maxLines: 6,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppTheme.rosePink,
+                              hintText: "add note...",
+                              hintStyle: const TextStyle(
                                 color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10),
+                                fontWeight: FontWeight.bold,
                               ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppTheme.rosePink,
-                                ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide.none,
                               ),
                             ),
-                          );
-                        }
-                      },
-                    ),
-                  ],
+                          ),
+                          const SizedBox(height: 12),
+                          Obx(() {
+                            final images = controller.imageList;
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount:
+                                  images.length < 9 ? images.length + 1 : 9,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    mainAxisSpacing: 8,
+                                    crossAxisSpacing: 8,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemBuilder: (context, index) {
+                                if (index < images.length) {
+                                  final img = images[index];
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child:
+                                        kIsWeb
+                                            ? Image.network(
+                                              img.path,
+                                              fit: BoxFit.cover,
+                                            )
+                                            : Image.file(
+                                              File(img.path),
+                                              fit: BoxFit.cover,
+                                            ),
+                                  );
+                                } else {
+                                  return GestureDetector(
+                                    onTap: controller.pickImages,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.add,
+                                          color: AppTheme.rosePink,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                        ],
+                      );
+                    }
+                  }),
                 ],
               ),
             ),
@@ -293,14 +253,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ),
                     ),
                     OutlinedButton(
-                      onPressed: () {
-                        final now = DateTime.now();
-                        ref.read(selectedDayProvider.notifier).state = now;
-                        ref.read(focusedDayProvider.notifier).state = now;
-                        ref.read(selectedMoodProvider.notifier).state = null;
-                        ref.read(imageListProvider.notifier).state = [];
-                        noteController.clear();
-                      },
+                      onPressed: controller.resetToToday,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.rosePink,
                         side: const BorderSide(color: AppTheme.rosePink),
@@ -317,48 +270,52 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   ],
                 ),
               ),
-              TableCalendar(
-                locale: 'th_TH',
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                focusedDay: focusedDay,
-                selectedDayPredicate: (day) => isSameDay(selectedDay, day),
-                onDaySelected: (selected, focused) {
-                  ref.read(selectedDayProvider.notifier).state = selected;
-                  ref.read(focusedDayProvider.notifier).state = focused;
-                  ref.read(selectedMoodProvider.notifier).state = null;
-                  ref.read(imageListProvider.notifier).state = [];
-                  noteController.clear();
-                },
-                headerStyle: const HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                ),
-                calendarStyle: const CalendarStyle(
-                  weekendTextStyle: TextStyle(color: Colors.black87),
-                  todayDecoration: BoxDecoration(
-                    color: AppTheme.rosePink,
-                    shape: BoxShape.circle,
+              Obx(
+                () => TableCalendar(
+                  locale: 'th_TH',
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: controller.focusedDay.value,
+                  selectedDayPredicate:
+                      (day) => isSameDay(controller.selectedDay.value, day),
+                  onDaySelected: controller.onDaySelected,
+                  headerStyle: const HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
                   ),
-                  selectedDecoration: BoxDecoration(
-                    color: Colors.pinkAccent,
-                    shape: BoxShape.circle,
+                  calendarStyle: const CalendarStyle(
+                    weekendTextStyle: TextStyle(color: Colors.black87),
+                    todayDecoration: BoxDecoration(
+                      color: AppTheme.rosePink,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.pinkAccent,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, date, events) {
-                    final moodIndex =
-                        moodData[DateTime.utc(date.year, date.month, date.day)];
-                    if (moodIndex != null) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: Image.asset(moodImages[moodIndex], height: 22),
-                        ),
-                      );
-                    }
-                    return null;
-                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, date, events) {
+                      final moodIndex =
+                          controller.moodData[DateTime.utc(
+                            date.year,
+                            date.month,
+                            date.day,
+                          )];
+                      if (moodIndex != null) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 30.0),
+                            child: CachedImage(
+                              imagePath: controller.moodImages[moodIndex],
+                              height: 22,
+                            ),
+                          ),
+                        );
+                      }
+                      return null;
+                    },
+                  ),
                 ),
               ),
               Padding(
@@ -367,16 +324,20 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          selectedDay != null
-                              ? '${selectedDay.day} ${DateFormat.EEEE('th_TH').format(selectedDay)}'
-                              : '${focusedDay.day} ${DateFormat.EEEE('th_TH').format(focusedDay)}',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.rosePink,
-                          ),
-                        ),
+                        Obx(() {
+                          final selectedDay = controller.selectedDay.value;
+                          final focusedDay = controller.focusedDay.value;
+                          return Text(
+                            selectedDay != null
+                                ? '${selectedDay.day} ${DateFormat.EEEE('th_TH').format(selectedDay)}'
+                                : '${focusedDay.day} ${DateFormat.EEEE('th_TH').format(focusedDay)}',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.rosePink,
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ],

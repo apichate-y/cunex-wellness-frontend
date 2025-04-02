@@ -1,31 +1,33 @@
-import 'package:cunex_wellness/core/services/background_service.dart';
+import 'package:cunex_wellness/core/controllers/background_controller.dart';
+import 'package:cunex_wellness/core/widgets/cached_image.dart';
 import 'package:cunex_wellness/core/widgets/custom_appbar.dart';
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
+import 'package:cunex_wellness/routes/app_pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 
-class IntroAudioScreen extends ConsumerWidget {
+class IntroAudioScreen extends StatelessWidget {
   const IntroAudioScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final backgroundController = Get.find<BackgroundController>();
     final screenHeight = MediaQuery.of(context).size.height;
-
-    final bgImage = ref.watch(backgroundImageProvider);
 
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
           // Background image
-          Image.asset(bgImage, fit: BoxFit.cover),
+          Obx(() => CachedImage(
+            imagePath: backgroundController.backgroundImage.value,
+            fit: BoxFit.cover,
+          )),
 
           // Appbar
           Positioned(
             top: 20,
             left: 0,
-            right: 0, // ขยายเต็มจอ
+            right: 0,
             child: Align(
               alignment: Alignment.topCenter,
               child: CustomAppbar(level: 1, progress: 0.5),
@@ -43,8 +45,8 @@ class IntroAudioScreen extends ConsumerWidget {
                 children: [
                   Positioned(
                     left: 0,
-                    child: Image.asset(
-                      'lib/assets/images/element/b.png',
+                    child: CachedImage(
+                      imagePath: 'lib/assets/images/element/b.png',
                       fit: BoxFit.contain,
                       height: 120,
                     ),
@@ -53,8 +55,8 @@ class IntroAudioScreen extends ConsumerWidget {
                     top: 20,
                     left: -50,
                     right: 0,
-                    child: Image.asset(
-                      'lib/assets/images/word/11.png',
+                    child: CachedImage(
+                      imagePath: 'lib/assets/images/word/11.png',
                       fit: BoxFit.contain,
                       height: 50,
                     ),
@@ -64,11 +66,11 @@ class IntroAudioScreen extends ConsumerWidget {
                     right: 40,
                     child: GestureDetector(
                       onTap: () {
-                        context.push('/playlist'); // สำหรับ GoRouter
+                        Get.toNamed(Routes.PLAYLIST);
                       },
-                      child: Image.asset(
-                        'lib/assets/images/word/4.png',
-                        scale: 9,
+                      child: CachedImage(
+                        imagePath: 'lib/assets/images/word/4.png',
+                        height: screenHeight * 0.04,
                       ),
                     ),
                   ),
@@ -82,8 +84,8 @@ class IntroAudioScreen extends ConsumerWidget {
             bottom: screenHeight * 0.22,
             left: 0,
             right: 0,
-            child: Image.asset(
-              'lib/assets/images/mascot/nexky character-07.png',
+            child: CachedImage(
+              imagePath: 'lib/assets/images/mascot/nexky character-07.png',
               height: 300,
             ),
           ),

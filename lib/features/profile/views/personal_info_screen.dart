@@ -1,16 +1,16 @@
 import 'package:cunex_wellness/config/color.dart';
+import 'package:cunex_wellness/core/controllers/background_controller.dart';
 import 'package:cunex_wellness/core/enums/day_period.dart' as dp;
-import 'package:cunex_wellness/core/services/background_service.dart';
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
+import 'package:cunex_wellness/core/widgets/cached_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
-class PersonalInfoScreen extends ConsumerWidget {
+class PersonalInfoScreen extends StatelessWidget {
   const PersonalInfoScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bgImage = ref.watch(backgroundImageProvider);
+  Widget build(BuildContext context) {
+    final backgroundController = Get.find<BackgroundController>();
     final period = dp.getDayPeriod();
     final textColor =
         (period == dp.DayPeriod.earlyMorning || period == dp.DayPeriod.night)
@@ -21,7 +21,12 @@ class PersonalInfoScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(bgImage, fit: BoxFit.cover),
+          Obx(
+            () => CachedImage(
+              imagePath: backgroundController.backgroundImage.value,
+              fit: BoxFit.cover,
+            ),
+          ),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -243,7 +248,7 @@ class PersonalInfoScreen extends ConsumerWidget {
               color: AppTheme.greyUltraLight,
               borderRadius: BorderRadius.circular(30),
               border: Border.all(color: Colors.black12),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 4,

@@ -1,19 +1,23 @@
 import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/features/music/views/audio_playlist_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CategoryFilterButton extends ConsumerWidget {
+class CategoryFilterButton extends StatelessWidget {
   final String? category;
   final String label;
 
-  const CategoryFilterButton({super.key, required this.category, required this.label});
+  const CategoryFilterButton({
+    super.key, 
+    required this.category, 
+    required this.label,
+    this.isSelected = false,
+    required this.onTap,
+  });
+  
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(selectedCategoryProvider);
-    category == selected || (category == null && selected == null);
-
+  Widget build(BuildContext context) {
     IconData getIcon(String? cat) {
       switch (cat) {
         case 'Sleep':
@@ -32,19 +36,26 @@ class CategoryFilterButton extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: GestureDetector(
-        onTap: () => ref.read(selectedCategoryProvider.notifier).state = category,
+        onTap: onTap,
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isSelected ? AppTheme.rosePink : Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(getIcon(category), color: AppTheme.rosePink, size: 32),
+              child: Icon(
+                getIcon(category), 
+                color: isSelected ? Colors.white : AppTheme.rosePink, 
+                size: 32
+              ),
             ),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: AppTheme.white)),
+            Text(
+              label, 
+              style: const TextStyle(color: AppTheme.white)
+            ),
           ],
         ),
       ),

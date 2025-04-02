@@ -1,35 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
+// lib/screens/chat_screen.dart
 import 'package:cunex_wellness/config/color.dart';
-import 'package:cunex_wellness/features/chat_bot/models/bot_message.dart';
+import 'package:cunex_wellness/features/chat_bot/providers/chat_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-final chatMessagesProvider = StateProvider<List<ChatMessage>>(
-  (ref) => [
-    ChatMessage(
-      text:
-          'เฮลโหล~ น้อง Nexky มาแล้ว! พร้อมเป็นเพื่อนคุยคลายเหงา และเติมพลังใจให้เธอนะ!',
-      isBot: true,
-    ),
-  ],
-);
-
-final chatInputProvider = StateProvider<String>((ref) => '');
-
-final geminiProvider = Provider<Gemini>((ref) {
-  return Gemini.init(apiKey: 'AIzaSyCDvOinZEXpKnnRLbMT6O6YS-6DqAv0o64');
-});
-
-class ChatScreen extends ConsumerStatefulWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
   @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController inputController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  late ChatController controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<ChatController>();
+  }
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -50,42 +41,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> sendMessage(String text) async {
-  final newMessages = [...ref.read(chatMessagesProvider)];
-  newMessages.add(ChatMessage(text: text, isBot: false));
-  ref.read(chatMessagesProvider.notifier).state = newMessages;
-  scrollToBottom();
-
-  final gemini = ref.read(geminiProvider);
-
-  try {
-    final response = await gemini.prompt(parts: [Part.text(text)]);
-
-    ref.read(chatMessagesProvider.notifier).state = [
-      ...ref.read(chatMessagesProvider),
-      ChatMessage(
-        text: response?.output ??
-            'น้อง Nekky อยู่ระหว่างพัก ไม่สามารถใช้งานได้ในขณะนี้',
-        isBot: true,
-      ),
-    ];
-  } catch (e) {
-    ref.read(chatMessagesProvider.notifier).state = [
-      ...ref.read(chatMessagesProvider),
-      ChatMessage(
-        text: 'น้อง Nekky อยู่ระหว่างพัก ไม่สามารถใช้งานได้ในขณะนี้',
-        isBot: true,
-      ),
-    ];
-  }
-
-  scrollToBottom();
-}
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final messages = ref.watch(chatMessagesProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.white,
@@ -117,58 +75,61 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                final isBot = message.isBot;
+            child: Obx(() {
+              scrollToBottom();
+              return ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.chatMessages.length,
+                itemBuilder: (context, index) {
+                  final message = controller.chatMessages[index];
+                  final isBot = message.isBot;
 
-                return Align(
-                  alignment:
-                      isBot ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (isBot) ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundImage: const AssetImage(
-                              'lib/assets/images/element/j.png',
+                  return Align(
+                    alignment:
+                        isBot ? Alignment.centerLeft : Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isBot) ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundImage: const AssetImage(
+                                'lib/assets/images/element/j.png',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Flexible(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color:
+                                  isBot
+                                      ? AppTheme.greyUltraLight
+                                      : AppTheme.rosePink,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              message.text,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isBot ? AppTheme.black : AppTheme.white,
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
                       ],
-                      Flexible(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color:
-                                isBot
-                                    ? AppTheme.greyUltraLight
-                                    : AppTheme.rosePink,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            message.text,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: isBot ? AppTheme.black : AppTheme.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  );
+                },
+              );
+            }),
           ),
           const Divider(height: 1),
           Padding(
@@ -183,7 +144,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: inputController,
-                    style: TextStyle(fontSize: 18.0),
+                    style: const TextStyle(fontSize: 18.0),
                     decoration: InputDecoration(
                       hintText: 'พิมพ์ข้อความ...',
                       filled: true,
@@ -197,7 +158,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         vertical: 10,
                       ),
                     ),
-                    onChanged: (value) => ref.read(chatInputProvider.notifier).state = value,
+                    onChanged: (value) => controller.chatInput.value = value,
                     onTap: scrollToBottom,
                   ),
                 ),
@@ -211,7 +172,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       final text = inputController.text.trim();
                       if (text.isEmpty) return;
                       inputController.clear();
-                      sendMessage(text);
+                      controller.sendMessage(text);
                     },
                   ),
                 ),
