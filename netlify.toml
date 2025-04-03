@@ -1,24 +1,104 @@
+# การตั้งค่าการสร้างโปรเจค
 [build]
-  command = "flutter clean && flutter pub get && flutter build web --release"
+  command = "flutter clean && flutter pub get && flutter build web --web-renderer html --release"
   publish = "build/web"
 
+# การตั้งค่าสภาพแวดล้อมสำหรับ Flutter
+[build.environment]
+  FLUTTER_CHANNEL = "stable"
+  FLUTTER_VERSION = "3.24.5"
+
+# การตั้งค่า redirects สำหรับ SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# ปรับแต่งการตั้งค่า cache-control
+# การตั้งค่า redirects เฉพาะสำหรับ iOS ที่อาจมีปัญหากับ History API
+[[redirects]]
+  from = "/botgender"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/home"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/calendar"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/qr-scan"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/chat"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/playlist"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/player"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/index.html"
+  status = 200
+
+# การตั้งค่า cache-control สำหรับไฟล์หลัก
 [[headers]]
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# สำหรับไฟล์ JavaScript
+# การตั้งค่า cache-control สำหรับ service worker
+[[headers]]
+  for = "/flutter_service_worker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# การตั้งค่า cache-control สำหรับไฟล์ manifest
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# การตั้งค่า cache-control สำหรับไฟล์ JavaScript
 [[headers]]
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-  
-[build.environment]
-  FLUTTER_CHANNEL = "stable"
-  FLUTTER_VERSION = "3.29.0"
+
+# การตั้งค่า cache-control สำหรับไฟล์ CSS
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# การตั้งค่า cache-control สำหรับไฟล์รูปภาพ
+[[headers]]
+  for = "/*.{png,jpg,jpeg,gif,webp,svg,ico}"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# การตั้งค่า cache-control สำหรับไฟล์ assets
+[[headers]]
+  for = "/assets/**/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# การตั้งค่า cache-control สำหรับไฟล์ fonts
+[[headers]]
+  for = "/fonts/**/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

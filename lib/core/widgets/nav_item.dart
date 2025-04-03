@@ -1,4 +1,3 @@
-import 'package:cunex_wellness/core/widgets/optimized_image.dart';
 import 'package:flutter/material.dart';
 
 class NavItem extends StatelessWidget {

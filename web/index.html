@@ -19,21 +19,33 @@
   <meta charset="UTF-8">
   <meta name="camera" content="allow">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Cunex Wellness application.">
 
   <!-- iOS meta tags & icons -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="cunex_wellness">
-  <link rel="prefetch" href="/_redirects">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>cunex_wellness</title>
+  <title>Cunex Wellness</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- เพิ่ม script เพื่อแก้ปัญหาการนำทางสำหรับ iOS -->
+  <script type="text/javascript">
+    // ป้องกันการโหลดซ้ำหรือเปลี่ยนเส้นทางที่ไม่จำเป็นสำหรับอุปกรณ์ iOS
+    window.addEventListener('load', function() {
+      // ตรวจจับว่าเป็น iOS หรือไม่
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        // ทำให้แน่ใจว่า history API ทำงานถูกต้องบน iOS
+        window.history.scrollRestoration = 'manual';
+      }
+    });
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
