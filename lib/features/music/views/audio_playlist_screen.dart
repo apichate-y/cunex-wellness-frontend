@@ -112,19 +112,17 @@ class AudioPlaylistScreen extends ConsumerWidget {
     for (var entry in audioFiles.entries) {
       final category = entry.key;
       final tracks = entry.value;
-      final filtered =
-          tracks.where((track) {
-            final lower = searchQuery.toLowerCase();
-            return track['title']!.toLowerCase().contains(lower) ||
-                category.toLowerCase().contains(lower);
-          }).toList();
+      final filtered = tracks.where((track) {
+        final lower = searchQuery.toLowerCase();
+        return track['title']!.toLowerCase().contains(lower) ||
+            category.toLowerCase().contains(lower);
+      }).toList();
       searchResults.addAll(filtered);
     }
 
-    final List<Map<String, String>> displayTracks =
-        searchQuery.isNotEmpty
-            ? searchResults
-            : selectedCategory != null
+    final List<Map<String, String>> displayTracks = searchQuery.isNotEmpty
+        ? searchResults
+        : selectedCategory != null
             ? audioFiles[selectedCategory] ?? []
             : audioFiles.entries.map((e) => e.value.first).toList();
 
@@ -140,7 +138,10 @@ class AudioPlaylistScreen extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
-              child: CustomAppbar(level: 1, progress: 0.5,),
+              child: CustomAppbar(
+                level: 1,
+                progress: 0.5,
+              ),
             ),
             Expanded(
               child: Padding(
@@ -158,10 +159,8 @@ class AudioPlaylistScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     TextField(
-                      onChanged:
-                          (value) =>
-                              ref.read(searchQueryProvider.notifier).state =
-                                  value,
+                      onChanged: (value) =>
+                          ref.read(searchQueryProvider.notifier).state = value,
                       decoration: InputDecoration(
                         hintText: 'What do you want to listen to?',
                         contentPadding: EdgeInsets.zero,
@@ -203,60 +202,60 @@ class AudioPlaylistScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      itemCount: displayTracks.length,
-                      itemBuilder: (context, index) {
-                        final track = displayTracks[index];
-                        final category =
-                            audioFiles.entries
-                                .firstWhere((e) => e.value.contains(track))
-                                .key;
+                    Expanded(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 80),
+                        itemCount: displayTracks.length,
+                        itemBuilder: (context, index) {
+                          final track = displayTracks[index];
+                          final category = audioFiles.entries
+                              .firstWhere((e) => e.value.contains(track))
+                              .key;
 
-                        return ListTile(
-                          leading: const Icon(
-                            Icons.music_note,
-                            color: Colors.white,
-                          ),
-                          title: Text(
-                            track['title']!,
-                            style: const TextStyle(
+                          return ListTile(
+                            leading: const Icon(
+                              Icons.music_note,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          subtitle: Text(
-                            category,
-                            style: const TextStyle(color: Colors.white70),
-                          ),
-                          trailing: const Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                          ),
-                          onTap: () async {
-                            final audioController = ref.read(
-                              audioPlayerProvider.notifier,
-                            );
-
-                            context.push(
-                              '/player',
-                              extra: {
-                                'title': track['title'],
-                                'category': category,
-                                'path': track['path'],
-                              },
-                            );
-
-                            await audioController.loadAndPlay(
-                              track['path']!,
+                            title: Text(
                               track['title']!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
                               category,
-                            );
-                          },
-                        );
-                      },
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                            trailing: const Icon(
+                              Icons.more_vert,
+                              color: Colors.white,
+                            ),
+                            onTap: () async {
+                              final audioController = ref.read(
+                                audioPlayerProvider.notifier,
+                              );
+
+                              context.push(
+                                '/player',
+                                extra: {
+                                  'title': track['title'],
+                                  'category': category,
+                                  'path': track['path'],
+                                },
+                              );
+
+                              await audioController.loadAndPlay(
+                                track['path']!,
+                                track['title']!,
+                                category,
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
