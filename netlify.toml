@@ -1,23 +1,3 @@
-# การตั้งค่าการสร้างโปรเจค
-[build]
-  # ติดตั้ง Flutter เวอร์ชันเฉพาะก่อนและรันคำสั่ง build
-  command = """
-    git clone https://github.com/flutter/flutter.git -b stable ./flutter
-    cd flutter
-    git checkout 3.24.5
-    cd ..
-    export PATH="$PATH:`pwd`/flutter/bin"
-    flutter --version
-    flutter precache
-    flutter clean && flutter pub get && flutter build web --web-renderer html --release
-  """
-  publish = "build/web"
-
-# การตั้งค่าสภาพแวดล้อมสำหรับ Flutter
-[build.environment]
-  FLUTTER_CHANNEL = "stable"
-  FLUTTER_VERSION = "3.24.5"
-
 # การตั้งค่า redirects สำหรับ SPA
 [[redirects]]
   from = "/*"
