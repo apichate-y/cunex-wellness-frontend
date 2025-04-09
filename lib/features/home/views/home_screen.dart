@@ -69,53 +69,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           if (!imagesLoaded) const Center(child: CircularProgressIndicator()),
 
           // Speech bubble + message
-          // Positioned(
-          //   top: screenHeight * 0.31,
-          //   left: 10,
-          //   right: 40,
-          //   child: SizedBox(
-          //     height: 125,
-          //     child: Stack(
-          //       children: [
-          //         Positioned(
-          //           left: 0,
-          //           child: Image.asset(
-          //             'lib/assets/images/element/b.png',
-          //             fit: BoxFit.contain,
-          //             height: 120,
-          //           ),
-          //         ),
-          //         Positioned(
-          //           top: 20,
-          //           left: -50,
-          //           right: 0,
-          //           child: Image.asset(
-          //             'lib/assets/images/word/3.png',
-          //             fit: BoxFit.contain,
-          //             height: 50,
-          //           ),
-          //         ),
-          //         Positioned(
-          //           bottom: 8,
-          //           right: 40,
-          //           child: GestureDetector(
-          //             onTap: () {
-          //               context.push('/chat'); // สำหรับ GoRouter
-          //             },
-          //             child: Image.asset(
-          //               'lib/assets/images/word/4.png',
-          //               scale: 9,
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-
-          // Mascot
           // แสดงเนื้อหาเมื่อรูปภาพโหลดเสร็จแล้ว
           if (imagesLoaded) ...[
+            Positioned(
+              top: screenHeight * 0.29,
+              left: 40,
+              right: 40,
+              child: Image.asset(
+                'lib/assets/images/element/a.png',
+                fit: BoxFit.contain,
+                height: screenHeight * 0.13,
+              ),
+            ),
+
+            Positioned(
+              top: screenHeight * 0.33,
+              left: 60,
+              right: 60,
+              child: Image.asset(
+                'lib/assets/images/word/1.png',
+                fit: BoxFit.contain,
+                height: screenHeight * 0.06,
+              ),
+            ),
+
+            // Mascot
+
             Positioned(
               bottom: screenHeight * 0.22,
               left: 0,
