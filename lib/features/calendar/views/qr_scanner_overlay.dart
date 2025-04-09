@@ -17,8 +17,7 @@ class _QRScannerOverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const double borderRadius = 16;
     const double overlaySize = 250;
-    final Paint paint = Paint()
-      ..color = Colors.black.withOpacity(0.6);
+    final Paint paint = Paint()..color = Colors.black.withOpacity(0.6);
 
     // มืดพื้นหลัง
     canvas.drawRect(Offset.zero & size, paint);
