@@ -50,6 +50,8 @@
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    Permissions-Policy = "camera=self"
+    # Feature-Policy = "camera 'self'"
 
 # การตั้งค่า cache-control สำหรับ service worker
 [[headers]]

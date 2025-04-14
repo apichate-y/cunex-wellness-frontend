@@ -4,9 +4,14 @@ import 'package:cunex_wellness/core/services/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 // Provider สำหรับติดตามสถานะการโหลดรูปภาพ
 final imagesLoadedProvider = StateProvider<bool>((ref) => false);
+
+// Provider สำหรับติดตามสถานะการอนุญาตกล้อง
+final cameraPermissionProvider =
+    StateProvider<PermissionStatus?>((ref) => null);
 
 // Provider สำหรับการโหลดรูปภาพ
 final imageLoaderProvider = FutureProvider.family<void, BuildContext>((
@@ -53,7 +58,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
     // เริ่มโหลดรูปภาพเมื่อ widget ถูกสร้าง
-    Future.microtask(() => ref.read(imageLoaderProvider(context)));
+    Future.microtask(() {
+      ref.read(imageLoaderProvider(context));
+      checkCameraPermission();
+    });
+  }
+
+  // ฟังก์ชันเช็คและขอสิทธิ์กล้อง
+  Future<void> checkCameraPermission() async {
+    try {
+      // เช็คสถานะสิทธิ์ปัจจุบัน
+      final status = await Permission.camera.status;
+
+      // อัพเดทสถานะใน provider
+      ref.read(cameraPermissionProvider.notifier).state = status;
+
+      // ถ้ายังไม่ได้รับอนุญาต ให้ขอสิทธิ์
+      if (!status.isGranted) {
+        final result = await Permission.camera.request();
+        ref.read(cameraPermissionProvider.notifier).state = result;
+
+        log('Camera permission request result: $result');
+      }
+    } catch (e) {
+      log('Error checking camera permission: $e');
+    }
   }
 
   void onMascotTap() {
@@ -94,7 +123,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 height: screenHeight * 0.13,
               ),
             ),
-
             Positioned(
               top: screenHeight * 0.33,
               left: 60,
@@ -105,7 +133,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 height: screenHeight * 0.06,
               ),
             ),
-
             Positioned(
               bottom: screenHeight * 0.22,
               left: 0,
@@ -121,7 +148,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
               ),
             ),
-
             Positioned(
               bottom: screenHeight * 0.16,
               left: 60,
